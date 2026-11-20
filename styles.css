@@ -377,8 +377,75 @@ body {
     transform: translate(-50%, -50%) scale(1);
 }
 
+.download-weed {
+    position: absolute;
+    z-index: 0;
+    pointer-events: none;
+    opacity: 0;
+    filter: drop-shadow(0 0 7px rgba(255, 0, 20, 0.75));
+    transition: opacity 1.5s ease 1.2s;
+}
+
+.reveal-stage.active .download-weed {
+    opacity: 1;
+}
+
+.download-weed-left,
+.download-weed-right {
+    bottom: -48px;
+    width: 145px;
+    height: 190px;
+    border: 6px solid #a80014;
+    border-right: 0;
+    border-bottom: 0;
+    border-radius: 80% 0 0 0;
+    animation: weedCreep 4s infinite ease-in-out;
+}
+
+.download-weed-left {
+    left: -42px;
+    transform: rotate(-17deg);
+}
+
+.download-weed-right {
+    right: -42px;
+    transform: scaleX(-1) rotate(-17deg);
+    animation-delay: -1.5s;
+}
+
+.download-weed-top {
+    top: -64px;
+    left: 50%;
+    width: 110px;
+    height: 95px;
+    border-left: 5px solid #e0001b;
+    border-radius: 70% 0 0 0;
+    transform: translateX(-50%) rotate(18deg);
+    animation: weedReach 3.5s infinite ease-in-out;
+}
+
+@keyframes weedCreep {
+    0%, 100% { transform: rotate(-17deg) translate(0, 8px); }
+    50% { transform: rotate(-17deg) translate(10px, -4px); }
+}
+
+.download-weed-right {
+    animation-name: weedCreepRight;
+}
+
+@keyframes weedCreepRight {
+    0%, 100% { transform: scaleX(-1) rotate(-17deg) translate(0, 8px); }
+    50% { transform: scaleX(-1) rotate(-17deg) translate(10px, -4px); }
+}
+
+@keyframes weedReach {
+    0%, 100% { transform: translateX(-50%) rotate(18deg) translateY(8px); }
+    50% { transform: translateX(-50%) rotate(18deg) translateY(-5px); }
+}
+
 .download-btn {
     position: relative;
+    z-index: 1;
     display: inline-block;
     width: 100%;
     padding: 1.5rem 2.5rem;
