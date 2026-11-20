@@ -6,23 +6,618 @@
     <title>05 REVIVE — Update 2.0 | Release Countdown</title>
     <meta name="description" content="Official release countdown for War of the Worlds mod: 05 REVIVE — Update 2.0.">
     <meta name="theme-color" content="#3b0008">
-    <link rel="stylesheet" href="styles.css">
+    <style>
+        /* ==========================================
+           05 REVIVE: UPDATE 2.0 — Atmospheric Countdown
+           ========================================== */
+        :root {
+            --atmosphere-progress: 0.15;
+            --searchlight-opacity: 0;
+            --horizon-red: #3b0008;
+            --blood-red: #cc0000;
+            --bright-red: #ff1a24;
+            --bg-dark: #030002;
+            --text-primary: #ffffff;
+            --text-muted: #888888;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background-color: var(--bg-dark);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            color: var(--text-primary);
+            user-select: none;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+
+        /* Screen Seismic Tremor */
+        body.shaking {
+            animation: seismicShake 0.15s infinite alternate ease-in-out;
+        }
+
+        @keyframes seismicShake {
+            0% { transform: translate(1px, 1px) rotate(0deg); }
+            50% { transform: translate(-2px, -1px) rotate(-0.3deg); }
+            100% { transform: translate(2px, 0px) rotate(0.3deg); }
+        }
+
+        /* ==========================================
+           Atmospheric Sky & Flash Layers
+           ========================================== */
+        .sky-background {
+            position: absolute;
+            inset: 0;
+            z-index: 1;
+            background: radial-gradient(ellipse 120% 70% at 50% 100%, 
+                var(--horizon-red) 0%, 
+                #150004 45%, 
+                var(--bg-dark) 90%);
+            transition: background 1.5s ease;
+        }
+
+        .heatray-flash {
+            position: absolute;
+            inset: 0;
+            z-index: 2;
+            background: radial-gradient(ellipse 80% 50% at 50% 80%, rgba(255, 30, 40, 0.45) 0%, transparent 70%);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.12s ease-out;
+        }
+
+        .heatray-flash.active {
+            opacity: 1;
+        }
+
+        .heatray-flash.release-flash {
+            background: #ffffff;
+            transition: opacity 1.5s ease;
+        }
+
+        /* Animated Cloud Haze */
+        .haze-layer {
+            position: absolute;
+            inset: -50%;
+            z-index: 3;
+            pointer-events: none;
+            opacity: calc(0.25 + (var(--atmosphere-progress) * 0.35));
+            mix-blend-mode: screen;
+        }
+
+        .haze-1 {
+            background: radial-gradient(circle at 30% 60%, rgba(139, 0, 0, 0.4) 0%, transparent 60%),
+                        radial-gradient(circle at 70% 40%, rgba(90, 0, 10, 0.45) 0%, transparent 50%);
+            animation: hazeShift1 28s infinite alternate ease-in-out;
+        }
+
+        .haze-2 {
+            background: radial-gradient(circle at 70% 70%, rgba(190, 10, 20, 0.3) 0%, transparent 55%),
+                        radial-gradient(circle at 20% 30%, rgba(110, 0, 0, 0.35) 0%, transparent 50%);
+            animation: hazeShift2 35s infinite alternate ease-in-out;
+        }
+
+        @keyframes hazeShift1 {
+            0% { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(4%, -3%) scale(1.08); }
+        }
+
+        @keyframes hazeShift2 {
+            0% { transform: translate(0, 0) scale(1.05); }
+            100% { transform: translate(-4%, 3%) scale(1); }
+        }
+
+        /* Searchlight Beams */
+        .searchlight-container {
+            position: absolute;
+            inset: 0;
+            z-index: 4;
+            pointer-events: none;
+            opacity: var(--searchlight-opacity);
+            transition: opacity 2s ease;
+        }
+
+        .searchlight-beam {
+            position: absolute;
+            bottom: 0;
+            width: 140px;
+            height: 120vh;
+            background: linear-gradient(0deg, rgba(255, 30, 40, 0.6) 0%, rgba(200, 0, 15, 0.15) 60%, transparent 100%);
+            clip-path: polygon(45% 100%, 55% 100%, 100% 0, 0 0);
+            transform-origin: bottom center;
+            filter: blur(8px);
+            mix-blend-mode: screen;
+        }
+
+        .beam-left {
+            left: 20%;
+            animation: searchlightSweep1 16s infinite alternate ease-in-out;
+        }
+
+        .beam-right {
+            right: 20%;
+            animation: searchlightSweep2 20s infinite alternate ease-in-out;
+        }
+
+        @keyframes searchlightSweep1 {
+            0% { transform: rotate(-35deg); }
+            100% { transform: rotate(25deg); }
+        }
+
+        @keyframes searchlightSweep2 {
+            0% { transform: rotate(30deg); }
+            100% { transform: rotate(-30deg); }
+        }
+
+        /* Particle Ash Canvas */
+        .spore-canvas {
+            position: absolute;
+            inset: 0;
+            z-index: 5;
+            pointer-events: none;
+        }
+
+        /* ==========================================
+           Realistic Multi-Layered Mountain Landscape
+           ========================================== */
+        .skyline-container {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 42vh;
+            z-index: 6;
+            pointer-events: none;
+        }
+
+        .skyline-svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Mountain Silhouette Layers with Atmospheric Lighting */
+        .mountain-far {
+            fill: #1a0307;
+            opacity: 0.88;
+        }
+
+        .mountain-mid {
+            fill: #0d0104;
+            opacity: 0.96;
+        }
+
+        .mountain-near {
+            fill: #030001;
+        }
+
+        /* ==========================================
+           Sound Toggle Button
+           ========================================== */
+        .sound-toggle {
+            position: fixed;
+            top: 24px;
+            right: 24px;
+            z-index: 100;
+            width: 46px;
+            height: 46px;
+            display: grid;
+            place-items: center;
+            background: rgba(10, 2, 4, 0.85);
+            border: 1px solid rgba(255, 30, 40, 0.65);
+            color: var(--bright-red);
+            padding: 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            backdrop-filter: blur(8px);
+            transition: all 0.3s ease;
+            box-shadow: 0 0 15px rgba(255, 26, 36, 0.35), 0 4px 20px rgba(0, 0, 0, 0.8);
+        }
+
+        .sound-icon {
+            width: 22px;
+            height: 22px;
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 1.8;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        .sound-toggle.audio-muted::after {
+            content: "";
+            position: absolute;
+            width: 30px;
+            height: 3px;
+            border-radius: 2px;
+            background: #ff1a24;
+            transform: rotate(-45deg);
+            box-shadow: 0 0 6px rgba(255, 26, 36, 0.8);
+        }
+
+        .sound-toggle:hover {
+            border-color: var(--bright-red);
+            background: rgba(25, 4, 8, 0.95);
+            box-shadow: 0 0 25px rgba(255, 26, 36, 0.65), 0 4px 20px rgba(0, 0, 0, 0.9);
+        }
+
+        .sound-toggle.audio-muted {
+            border-color: rgba(180, 0, 20, 0.5);
+            color: #888888;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6);
+        }
+
+        .sound-toggle.audio-active {
+            border-color: rgba(255, 40, 50, 0.95);
+            color: var(--bright-red);
+            animation: soundActivePulse 3s infinite ease-in-out;
+        }
+
+        @keyframes soundActivePulse {
+            0%, 100% {
+                box-shadow: 0 0 12px rgba(255, 26, 36, 0.4), 0 4px 20px rgba(0, 0, 0, 0.7);
+            }
+            50% {
+                box-shadow: 0 0 22px rgba(255, 26, 36, 0.7), 0 4px 20px rgba(0, 0, 0, 0.7);
+            }
+        }
+
+        /* ==========================================
+           Hidden Debug / Demo Panel
+           ========================================== */
+        .demo-panel {
+            position: fixed;
+            top: 80px;
+            right: 24px;
+            z-index: 110;
+            width: min(380px, calc(100vw - 32px));
+            padding: 1.25rem;
+            color: var(--text-primary);
+            background: rgba(12, 2, 5, 0.96);
+            border: 1px solid rgba(255, 30, 40, 0.75);
+            border-radius: 6px;
+            box-shadow: 0 0 35px rgba(139, 0, 0, 0.6), 0 12px 30px rgba(0, 0, 0, 0.8);
+            opacity: 0;
+            pointer-events: none;
+            transform: translateY(-10px);
+            transition: opacity 0.25s ease, transform 0.25s ease;
+        }
+
+        .demo-panel.active {
+            opacity: 1;
+            pointer-events: auto;
+            transform: translateY(0);
+        }
+
+        .demo-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.35rem;
+        }
+
+        .demo-header h2 {
+            color: var(--bright-red);
+            font-size: 0.95rem;
+            letter-spacing: 0.18em;
+        }
+
+        .demo-close-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            font-size: 1rem;
+            cursor: pointer;
+        }
+
+        .demo-close-btn:hover {
+            color: #ffffff;
+        }
+
+        .demo-panel p {
+            margin-bottom: 1rem;
+            color: var(--text-muted);
+            font-size: 0.78rem;
+            line-height: 1.35;
+        }
+
+        .demo-time-fields {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 0.45rem;
+        }
+
+        .demo-time-fields label {
+            color: var(--text-muted);
+            font-size: 0.6rem;
+            letter-spacing: 0.1em;
+            text-align: center;
+        }
+
+        .demo-time-fields input {
+            width: 100%;
+            margin-top: 0.35rem;
+            padding: 0.45rem 0.2rem;
+            color: #fff;
+            background: rgba(60, 0, 8, 0.85);
+            border: 1px solid rgba(255, 30, 40, 0.5);
+            border-radius: 3px;
+            font: inherit;
+            text-align: center;
+        }
+
+        .demo-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .demo-actions button {
+            flex: 1;
+            min-width: 100px;
+            padding: 0.6rem 0.4rem;
+            color: #fff;
+            background: #600008;
+            border: 1px solid #d4141c;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 0.62rem;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+        }
+
+        .demo-actions button:hover {
+            background: #99000e;
+        }
+
+        /* ==========================================
+           Main Content Layout
+           ========================================== */
+        .main-container {
+            position: relative;
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 2rem;
+            max-width: 900px;
+            width: 100%;
+        }
+
+        /* Headers */
+        .title-header {
+            width: 100%;
+            margin-bottom: 3.5rem;
+            text-align: center;
+            transition: opacity 1.5s ease, transform 1.5s ease;
+        }
+
+        .title-header.fade-out {
+            opacity: 0;
+            transform: translateY(-20px);
+            pointer-events: none;
+        }
+
+        .main-title {
+            font-size: clamp(2.5rem, 8vw, 5.5rem);
+            font-weight: 900;
+            letter-spacing: 0.35em;
+            text-transform: uppercase;
+            color: #ffffff;
+            text-shadow: 0 0 30px rgba(139, 0, 0, 0.65), 0 4px 12px rgba(0, 0, 0, 0.95);
+            margin: 0 auto;
+            line-height: 1.1;
+        }
+
+        .sub-title {
+            font-size: clamp(1rem, 3vw, 1.8rem);
+            font-weight: 700;
+            letter-spacing: 0.45em;
+            text-transform: uppercase;
+            color: #aa2025;
+            margin: 0.75rem auto 0;
+            text-shadow: 0 0 15px rgba(170, 32, 37, 0.55);
+        }
+
+        /* Countdown Stage */
+        .countdown-stage {
+            width: 100%;
+            transition: opacity 1.5s ease, transform 1.5s ease;
+        }
+
+        .countdown-stage.fade-out {
+            opacity: 0;
+            transform: scale(0.95);
+            pointer-events: none;
+        }
+
+        .countdown-grid {
+            width: 100%;
+            max-width: 836px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .time-block {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-width: 90px;
+        }
+
+        .time-val {
+            font-size: clamp(2.8rem, 7vw, 5rem);
+            font-weight: 800;
+            font-variant-numeric: tabular-nums;
+            letter-spacing: 0.05em;
+            color: #ffffff;
+            text-shadow: 0 0 20px rgba(180, 0, 20, 0.5), 0 4px 10px rgba(0, 0, 0, 0.9);
+        }
+
+        .time-label {
+            font-size: clamp(0.65rem, 1.5vw, 0.85rem);
+            font-weight: 700;
+            letter-spacing: 0.3em;
+            color: var(--text-muted);
+            margin-top: 0.5rem;
+            margin-right: -0.3em;
+        }
+
+        .time-separator {
+            font-size: clamp(2.5rem, 6vw, 4rem);
+            font-weight: 300;
+            color: rgba(180, 0, 20, 0.6);
+            margin-top: -1.5rem;
+            animation: pulseSeparator 2s infinite ease-in-out;
+        }
+
+        @keyframes pulseSeparator {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 0.9; }
+        }
+
+        /* Clean Central Reveal Stage */
+        .reveal-stage {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0.85);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 1.8s ease 0.5s, transform 1.8s cubic-bezier(0.16, 1, 0.3, 1) 0.5s;
+            z-index: 20;
+            width: 90%;
+            max-width: 500px;
+        }
+
+        .reveal-stage.active {
+            opacity: 1;
+            pointer-events: auto;
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        .download-btn {
+            position: relative;
+            z-index: 1;
+            display: inline-block;
+            width: 100%;
+            padding: 1.6rem 2.5rem;
+            background: linear-gradient(135deg, #8c0006 0%, #350003 100%);
+            border: 2px solid #ff1a24;
+            border-radius: 6px;
+            color: #ffffff;
+            text-decoration: none;
+            font-size: clamp(1.1rem, 2.5vw, 1.55rem);
+            font-weight: 900;
+            letter-spacing: 0.32em;
+            text-transform: uppercase;
+            box-shadow: 0 0 40px rgba(220, 0, 20, 0.7), 0 12px 35px rgba(0, 0, 0, 0.95);
+            overflow: hidden;
+            transition: all 0.4s ease;
+            text-align: center;
+        }
+
+        .download-btn:hover {
+            background: linear-gradient(135deg, #b8000b 0%, #520005 100%);
+            border-color: #ffffff;
+            box-shadow: 0 0 60px rgba(255, 30, 40, 1), 0 14px 45px rgba(0, 0, 0, 0.95);
+            transform: translateY(-3px);
+        }
+
+        .btn-glow {
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.25) 0%, transparent 60%);
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+
+        .download-btn:hover .btn-glow {
+            opacity: 1;
+        }
+
+        .aria-hidden {
+            display: none;
+        }
+
+        .reveal-stage.active.aria-hidden {
+            display: block;
+        }
+
+        @media (max-width: 600px) {
+            .countdown-grid {
+                gap: 0.6rem;
+            }
+            .time-block {
+                min-width: 65px;
+            }
+            .time-separator {
+                display: none;
+            }
+            .title-header {
+                margin-bottom: 2rem;
+            }
+            .sound-toggle {
+                top: 16px;
+                right: 16px;
+                width: 40px;
+                height: 40px;
+                padding: 9px;
+            }
+            .demo-panel {
+                top: 68px;
+                right: 16px;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .haze-1, .haze-2, .sound-toggle.audio-muted, .time-separator, .beam-left, .beam-right {
+                animation: none !important;
+            }
+            .countdown-stage, .reveal-stage, .sky-background {
+                transition: none !important;
+            }
+        }
+    </style>
 </head>
 <body>
-    <!-- Sound Toggle Button -->
-    <button id="sound-toggle" class="sound-toggle audio-muted" type="button" aria-label="Enable sound" aria-pressed="false">
+    <!-- Sound Toggle Button (ON BY DEFAULT) -->
+    <button id="sound-toggle" class="sound-toggle audio-active" type="button" aria-label="Toggle sound" aria-pressed="true">
         <svg class="sound-icon" viewBox="0 0 24 24" aria-hidden="true">
             <path fill="none" d="M11 5 6.8 8.5H3v7h3.8L11 19V5Zm4.2 3.1a5.5 5.5 0 0 1 0 7.8M18 5.5a9 9 0 0 1 0 13"/>
         </svg>
     </button>
 
-    <!-- Hidden Visual Debug / Demo Panel -->
+    <!-- Secret Debug / Demo Control Panel -->
     <aside id="demo-panel" class="demo-panel" aria-hidden="true">
         <div class="demo-header">
             <h2>RELEASE DEMO</h2>
             <button id="demo-close" class="demo-close-btn" type="button" aria-label="Hide Menu">✕</button>
         </div>
-        <p>Set a test countdown duration to preview weed growth &amp; release transition.</p>
+        <p>Set a test countdown duration to preview atmosphere &amp; zero release transition.</p>
         <div class="demo-time-fields">
             <label>DAYS<input id="demo-days" type="number" min="0" max="99" value="0"></label>
             <label>HOURS<input id="demo-hours" type="number" min="0" max="23" value="0"></label>
@@ -36,58 +631,38 @@
         </div>
     </aside>
 
-    <!-- Background Atmospheric & Haze Layers -->
+    <!-- Sky Background & Heat-Ray Flashes -->
     <div class="sky-background" aria-hidden="true"></div>
+    <div id="heatray-flash" class="heatray-flash" aria-hidden="true"></div>
     <div class="haze-layer haze-1" aria-hidden="true"></div>
     <div class="haze-layer haze-2" aria-hidden="true"></div>
-    
-    <!-- Organic Red Weed Layer with Jagged Branching SVG Tendrils -->
-    <div class="weed-container" aria-hidden="true">
-        <!-- Top Jagged Vine Cluster -->
-        <svg class="vine-svg tendril-top" viewBox="0 0 1000 400" preserveAspectRatio="none">
-            <!-- Main Arterial Trunks -->
-            <path class="vine-shadow" d="M 50,-10 L 90,80 L 140,120 L 120,190 L 180,240 M 300,-10 L 320,90 L 280,160 L 340,220 M 600,-10 L 570,100 L 630,170 L 590,250 M 850,-10 L 820,110 L 880,180 L 840,260" />
-            <path class="vine-main" d="M 50,-10 L 90,80 L 140,120 L 120,190 L 180,240 M 300,-10 L 320,90 L 280,160 L 340,220 M 600,-10 L 570,100 L 630,170 L 590,250 M 850,-10 L 820,110 L 880,180 L 840,260" />
-            <!-- Jagged Branch Offshoots & Thorns -->
-            <path class="vine-branch" d="M 90,80 L 40,130 L 10,180 M 140,120 L 210,150 L 250,210 M 320,90 L 390,120 L 430,170 M 280,160 L 220,200 L 190,270 M 570,100 L 490,130 L 450,190 M 630,170 L 710,210 L 750,270 M 820,110 L 760,150 L 710,220 M 880,180 L 940,220 L 980,280" />
-            <path class="vine-sub" d="M 120,190 L 70,230 L 90,280 M 340,220 L 400,260 L 370,310 M 590,250 L 650,290 L 620,340 M 840,260 L 780,300 L 810,350" />
-            <!-- Vascular Capillary Nodes -->
-            <path class="vine-web" d="M 140,120 Q 200,90 280,160 M 320,90 Q 450,60 570,100 M 630,170 Q 750,130 820,110" />
-        </svg>
 
-        <!-- Bottom Jagged Vine Cluster -->
-        <svg class="vine-svg tendril-bottom" viewBox="0 0 1000 400" preserveAspectRatio="none">
-            <path class="vine-shadow" d="M 80,410 L 120,320 L 70,270 L 130,190 L 90,130 M 350,410 L 310,310 L 370,230 L 320,150 M 650,410 L 680,300 L 620,220 L 670,140 M 900,410 L 860,300 L 920,230 L 870,150" />
-            <path class="vine-main" d="M 80,410 L 120,320 L 70,270 L 130,190 L 90,130 M 350,410 L 310,310 L 370,230 L 320,150 M 650,410 L 680,300 L 620,220 L 670,140 M 900,410 L 860,300 L 920,230 L 870,150" />
-            <path class="vine-branch" d="M 120,320 L 180,290 L 220,230 M 70,270 L 10,240 M 310,310 L 240,280 L 200,220 M 370,230 L 440,200 L 480,140 M 680,300 L 750,270 L 790,210 M 620,220 L 550,190 L 510,130 M 860,300 L 790,260 L 750,190 M 920,230 L 980,190" />
-            <path class="vine-sub" d="M 130,190 L 190,150 M 320,150 L 260,110 M 670,140 L 730,90 M 870,150 L 810,100" />
-            <path class="vine-web" d="M 70,270 Q 180,320 310,310 M 370,230 Q 500,260 620,220 M 680,300 Q 780,330 860,300" />
-        </svg>
+    <!-- Red Searchlight Beams -->
+    <div class="searchlight-container" aria-hidden="true">
+        <div class="searchlight-beam beam-left"></div>
+        <div class="searchlight-beam beam-right"></div>
+    </div>
 
-        <!-- Left Jagged Vine Cluster -->
-        <svg class="vine-svg tendril-left" viewBox="0 0 400 1000" preserveAspectRatio="none">
-            <path class="vine-shadow" d="M -10,80 L 110,130 L 160,90 L 230,160 M -10,350 L 100,320 L 170,380 L 240,330 L 290,390 M -10,650 L 120,610 L 180,680 L 250,620 M -10,880 L 90,830 L 160,890 L 220,840" />
-            <path class="vine-main" d="M -10,80 L 110,130 L 160,90 L 230,160 M -10,350 L 100,320 L 170,380 L 240,330 L 290,390 M -10,650 L 120,610 L 180,680 L 250,620 M -10,880 L 90,830 L 160,890 L 220,840" />
-            <path class="vine-branch" d="M 110,130 L 140,200 L 190,240 M 170,380 L 210,450 L 260,490 M 120,610 L 150,540 L 200,500 M 160,890 L 210,940" />
-            <path class="vine-sub" d="M 230,160 L 280,210 M 290,390 L 340,430 M 250,620 L 310,660 M 220,840 L 270,880" />
-            <path class="vine-web" d="M 160,90 Q 120,220 100,320 M 170,380 Q 140,500 120,610 M 180,680 Q 140,770 90,830" />
-        </svg>
+    <!-- HTML5 Red Spore / Ash Particle Storm Canvas -->
+    <canvas id="spore-canvas" class="spore-canvas" aria-hidden="true"></canvas>
 
-        <!-- Right Jagged Vine Cluster -->
-        <svg class="vine-svg tendril-right" viewBox="0 0 400 1000" preserveAspectRatio="none">
-            <path class="vine-shadow" d="M 410,100 L 290,140 L 240,90 L 170,170 M 410,380 L 300,340 L 230,400 L 160,340 L 110,410 M 410,680 L 280,630 L 220,700 L 150,630 M 410,900 L 310,850 L 240,910 L 180,850" />
-            <path class="vine-main" d="M 410,100 L 290,140 L 240,90 L 170,170 M 410,380 L 300,340 L 230,400 L 160,340 L 110,410 M 410,680 L 280,630 L 220,700 L 150,630 M 410,900 L 310,850 L 240,910 L 180,850" />
-            <path class="vine-branch" d="M 290,140 L 260,210 L 210,250 M 230,400 L 190,470 L 140,510 M 280,630 L 250,560 L 200,520 M 240,910 L 190,960" />
-            <path class="vine-sub" d="M 170,170 L 120,220 M 110,410 L 60,450 M 150,630 L 90,670 M 180,850 L 130,890" />
-            <path class="vine-web" d="M 240,90 Q 280,220 300,340 M 230,400 Q 260,520 280,630 M 220,700 Q 260,790 310,850" />
+    <!-- Realistic Layered Mountain Skyline (Organic Alpine Peaks & Rolling Hills) -->
+    <div class="skyline-container" aria-hidden="true">
+        <svg class="skyline-svg" viewBox="0 0 1400 400" preserveAspectRatio="none">
+            <!-- Distant Majestic Alpine Peaks (Layer 1) -->
+            <path class="mountain-far" d="M 0,400 L 0,190 Q 25,160 50,130 Q 75,150 100,170 Q 135,120 170,75 Q 195,110 220,140 Q 255,100 290,60 Q 320,105 350,150 Q 390,115 430,75 Q 460,115 490,155 Q 530,95 570,35 Q 605,85 640,135 Q 685,80 730,30 Q 765,85 800,140 Q 845,85 890,30 Q 925,80 960,130 Q 1005,75 1050,20 Q 1085,75 1120,130 Q 1165,80 1210,35 Q 1245,85 1280,135 Q 1320,95 1360,55 Q 1380,95 1400,130 L 1400,400 Z" />
+            
+            <!-- Midground Rugged Crags & Ridge Line (Layer 2) -->
+            <path class="mountain-mid" d="M 0,400 L 0,240 C 30,225 60,190 95,170 C 130,195 160,230 195,215 C 230,195 265,145 300,125 C 335,160 365,200 400,210 C 435,180 470,130 505,110 C 540,150 570,195 605,205 C 640,170 675,115 710,95 C 745,140 775,190 810,200 C 845,165 880,110 915,90 C 950,135 980,185 1015,195 C 1050,160 1085,115 1120,100 C 1155,145 1185,190 1220,205 C 1255,175 1290,135 1325,115 C 1360,150 1385,185 1400,200 L 1400,400 Z" />
+            
+            <!-- Foreground Dark Rolling Hills & Valleys (Layer 3) -->
+            <path class="mountain-near" d="M 0,400 L 0,300 C 50,285 100,255 160,240 C 220,260 270,290 330,275 C 390,255 440,215 500,200 C 560,230 610,270 670,280 C 730,250 780,205 840,190 C 900,225 950,270 1010,280 C 1070,250 1120,215 1180,200 C 1240,230 1300,265 1400,250 L 1400,400 Z" />
         </svg>
-
-        <div class="weed-vignette"></div>
     </div>
 
     <!-- Main Content Container -->
     <main class="main-container">
-        <!-- Header Title -->
+        <!-- Title Header -->
         <header id="title-header" class="title-header">
             <h1 class="main-title">05 REVIVE</h1>
             <h2 class="sub-title">UPDATE 2.0</h2>
@@ -118,7 +693,7 @@
             </div>
         </section>
 
-        <!-- Download Stage (Revealed at T-0 with clean stage, zero text overlap) -->
+        <!-- Clean Download Stage (Revealed at T-0) -->
         <section id="reveal-stage" class="reveal-stage aria-hidden" aria-hidden="true">
             <a id="download-link" href="https://joshuaframptonunofficial.github.io/wotw-mods/" class="download-btn" target="_blank" rel="noopener noreferrer">
                 <span class="btn-glow"></span>
@@ -127,6 +702,406 @@
         </section>
     </main>
 
-    <script src="script.js"></script>
+    <script>
+        /* ==========================================
+           05 REVIVE: UPDATE 2.0 — Atmospheric Script
+           ========================================== */
+
+        // Target Date: 20 November 2026 at 5:00 PM Eastern Standard Time (UTC-5)
+        const TARGET_DATE_ISO = '2026-11-20T17:00:00-05:00';
+
+        // Background Music Playlist
+        const MUSIC_PLAYLIST = ['music1.mp3', 'music2.mp3', 'music3.mp3'];
+        let trackDurationSec = 180;
+        const HORN_AUDIO_FILE = 'horn.mp3';
+
+        // 6-Hour Timeline Thresholds in Ms
+        const SIX_HOURS_MS = 6 * 60 * 60 * 1000;
+        const THREE_HOURS_MS = 3 * 60 * 60 * 1000;
+        const ONE_HOUR_MS = 1 * 60 * 60 * 1000;
+        const ONE_MINUTE_MS = 1 * 60 * 1000;
+
+        const targetTimestamp = new Date(TARGET_DATE_ISO).getTime();
+        
+        // AUDIO ON BY DEFAULT
+        let audioEnabled = true;
+        let musicAudio = new Audio();
+        let hornAudio = new Audio(HORN_AUDIO_FILE);
+        let hasTriggeredRelease = false;
+        let countdownInterval = null;
+        let demoInterval = null;
+        let demoMode = false;
+        let soundButtonClicks = 0;
+        let soundButtonClickReset = null;
+
+        // DOM Elements
+        const elDays = document.getElementById('days');
+        const elHours = document.getElementById('hours');
+        const elMinutes = document.getElementById('minutes');
+        const elSeconds = document.getElementById('seconds');
+        const elSoundToggle = document.getElementById('sound-toggle');
+        const elTitleHeader = document.getElementById('title-header');
+        const elCountdownStage = document.getElementById('countdown-stage');
+        const elRevealStage = document.getElementById('reveal-stage');
+        const elHeatrayFlash = document.getElementById('heatray-flash');
+        const elDemoPanel = document.getElementById('demo-panel');
+        const elDemoDays = document.getElementById('demo-days');
+        const elDemoHours = document.getElementById('demo-hours');
+        const elDemoMinutes = document.getElementById('demo-minutes');
+        const elDemoSeconds = document.getElementById('demo-seconds');
+
+        // Spore Particle Storm Engine
+        const canvas = document.getElementById('spore-canvas');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+        let maxParticles = 40;
+        let particleSpeedMultiplier = 1;
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        class Particle {
+            constructor() {
+                this.reset();
+            }
+            reset() {
+                this.x = Math.random() * canvas.width;
+                this.y = canvas.height + Math.random() * 50;
+                this.size = Math.random() * 2.5 + 0.8;
+                this.speedY = (Math.random() * 1.2 + 0.4) * particleSpeedMultiplier;
+                this.speedX = (Math.random() - 0.5) * 0.8;
+                this.alpha = Math.random() * 0.6 + 0.2;
+                this.hue = Math.random() > 0.3 ? 0 : 15; // Red / Crimson
+            }
+            update() {
+                this.y -= this.speedY;
+                this.x += this.speedX + Math.sin(this.y * 0.01) * 0.3;
+                if (this.y < -10) this.reset();
+            }
+            draw() {
+                ctx.save();
+                ctx.globalAlpha = this.alpha;
+                ctx.fillStyle = `hsl(${this.hue}, 90%, 55%)`;
+                ctx.shadowBlur = 8;
+                ctx.shadowColor = '#ff1a24';
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.restore();
+            }
+        }
+
+        function initParticles() {
+            particles = [];
+            for (let i = 0; i < 250; i++) {
+                particles.push(new Particle());
+            }
+        }
+        initParticles();
+
+        function renderParticles() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const activeCount = Math.min(particles.length, maxParticles);
+            for (let i = 0; i < activeCount; i++) {
+                particles[i].update();
+                particles[i].draw();
+            }
+            requestAnimationFrame(renderParticles);
+        }
+        requestAnimationFrame(renderParticles);
+
+        /* ==========================================
+           ROBUST AUDIO ENGINE & AUTOPLAY LOGIC
+           ========================================== */
+        function initAudioEngine() {
+            musicAudio.loop = false;
+            musicAudio.volume = 0.25;
+
+            hornAudio.volume = 1.0;
+            hornAudio.load();
+
+            musicAudio.addEventListener('loadedmetadata', () => {
+                if (musicAudio.duration && !isNaN(musicAudio.duration)) {
+                    trackDurationSec = musicAudio.duration;
+                }
+            });
+
+            musicAudio.addEventListener('ended', () => {
+                if (MUSIC_PLAYLIST.length > 0) syncGlobalAudio();
+            });
+
+            // Attempt seamless autoplay on load
+            syncGlobalAudio();
+        }
+
+        function syncGlobalAudio() {
+            if (!audioEnabled || MUSIC_PLAYLIST.length === 0 || !musicAudio) return;
+
+            const epochSec = Math.floor(Date.now() / 1000);
+            const trackIndex = Math.floor(epochSec / trackDurationSec) % MUSIC_PLAYLIST.length;
+            const trackPosition = epochSec % trackDurationSec;
+            const selectedTrack = MUSIC_PLAYLIST[trackIndex];
+
+            if (!musicAudio.src || !musicAudio.src.endsWith(selectedTrack)) {
+                musicAudio.src = selectedTrack;
+            }
+
+            try {
+                // Set playback position safely
+                if (musicAudio.readyState >= 1) {
+                    musicAudio.currentTime = trackPosition;
+                }
+            } catch (e) {
+                console.warn('Playback position sync deferred:', e);
+            }
+
+            const playPromise = musicAudio.play();
+            if (playPromise !== undefined) {
+                playPromise.then(() => {
+                    // Autoplay succeeded immediately!
+                }).catch(err => {
+                    console.log('Autoplay deferred by browser policy. Awaiting first user touch/click:', err);
+                    // Modern browser autoplay protection triggered:
+                    // Unlock audio automatically on very first user click, tap, or keypress anywhere!
+                    setupFirstUserGestureUnlock();
+                });
+            }
+        }
+
+        function setupFirstUserGestureUnlock() {
+            const unlockAudio = () => {
+                if (audioEnabled && musicAudio && musicAudio.paused) {
+                    musicAudio.play().then(() => {
+                        console.log('Audio unlocked and playing successfully!');
+                    }).catch(err => console.warn('Unlock failed:', err));
+                }
+                window.removeEventListener('pointerdown', unlockAudio);
+                window.removeEventListener('click', unlockAudio);
+                window.removeEventListener('touchstart', unlockAudio);
+                window.removeEventListener('keydown', unlockAudio);
+            };
+
+            window.addEventListener('pointerdown', unlockAudio, { once: true });
+            window.addEventListener('click', unlockAudio, { once: true });
+            window.addEventListener('touchstart', unlockAudio, { once: true });
+            window.addEventListener('keydown', unlockAudio, { once: true });
+        }
+
+        function toggleAudio() {
+            audioEnabled = !audioEnabled;
+            if (audioEnabled) {
+                elSoundToggle.classList.remove('audio-muted');
+                elSoundToggle.classList.add('audio-active');
+                elSoundToggle.setAttribute('aria-pressed', 'true');
+                syncGlobalAudio();
+            } else {
+                elSoundToggle.classList.remove('audio-active');
+                elSoundToggle.classList.add('audio-muted');
+                elSoundToggle.setAttribute('aria-pressed', 'false');
+                if (musicAudio) musicAudio.pause();
+            }
+        }
+
+        function handleSoundToggleClick() {
+            toggleAudio();
+            soundButtonClicks += 1;
+            clearTimeout(soundButtonClickReset);
+            soundButtonClickReset = setTimeout(() => soundButtonClicks = 0, 4000);
+            if (soundButtonClicks >= 6) {
+                soundButtonClicks = 0;
+                openDemoPanel();
+            }
+        }
+        elSoundToggle.addEventListener('click', handleSoundToggleClick);
+
+        function triggerHeatrayFlash() {
+            elHeatrayFlash.classList.add('active');
+            setTimeout(() => elHeatrayFlash.classList.remove('active'), 140);
+        }
+
+        // Atmosphere Escalation Matrix (Driven by 6-Hour Countdown)
+        function updateAtmosphere(remainingMs) {
+            if (hasTriggeredRelease) return;
+
+            if (remainingMs <= 0) {
+                maxParticles = 250;
+                document.documentElement.style.setProperty('--searchlight-opacity', '1.0');
+            } else if (remainingMs <= ONE_MINUTE_MS) {
+                // Final 60 Seconds: Chaotic particle storm, fast searchlights, continuous screen tremor
+                maxParticles = 220;
+                particleSpeedMultiplier = 2.5;
+                document.documentElement.style.setProperty('--searchlight-opacity', '1.0');
+                document.body.classList.add('shaking');
+            } else if (remainingMs <= ONE_HOUR_MS) {
+                // 1 Hour to 1 Minute: Heavy spore storm, intense searchlights
+                maxParticles = 140;
+                particleSpeedMultiplier = 1.6;
+                document.documentElement.style.setProperty('--searchlight-opacity', '0.85');
+                document.body.classList.remove('shaking');
+            } else if (remainingMs <= THREE_HOURS_MS) {
+                // 3 Hours to 1 Hour: Searchlights active, swelling storm
+                maxParticles = 80;
+                particleSpeedMultiplier = 1.2;
+                document.documentElement.style.setProperty('--searchlight-opacity', '0.5');
+                document.body.classList.remove('shaking');
+            } else {
+                // > 3 Hours: Subtle red ash drifting
+                maxParticles = 40;
+                particleSpeedMultiplier = 1.0;
+                document.documentElement.style.setProperty('--searchlight-opacity', '0');
+                document.body.classList.remove('shaking');
+            }
+
+            // Audio Volume Escalation & T-5s Silence Ducking
+            if (musicAudio && audioEnabled && !hasTriggeredRelease) {
+                if (remainingMs <= 5000 && remainingMs > 0) {
+                    musicAudio.volume = 0.85 * Math.max(0, remainingMs / 5000);
+                } else if (remainingMs <= ONE_MINUTE_MS) {
+                    musicAudio.volume = 0.85;
+                } else if (remainingMs <= ONE_HOUR_MS) {
+                    musicAudio.volume = 0.5;
+                } else {
+                    musicAudio.volume = 0.25;
+                }
+            }
+        }
+
+        function updateCountdown() {
+            if (demoMode) return;
+            const now = Date.now();
+            const remainingMs = targetTimestamp - now;
+
+            if (remainingMs <= 0) {
+                renderTime(0, 0, 0, 0);
+                triggerReleaseSequence();
+                clearInterval(countdownInterval);
+                return;
+            }
+
+            const totalSeconds = Math.floor(remainingMs / 1000);
+            const days = Math.floor(totalSeconds / (3600 * 24));
+            const hours = Math.floor((totalSeconds % (3600 * 24)) / 3600);
+            const minutes = Math.floor((totalSeconds % 3600) / 60);
+            const seconds = totalSeconds % 60;
+
+            renderTime(days, hours, minutes, seconds);
+            updateAtmosphere(remainingMs);
+
+            // Random Cloud Sky Flashes
+            if (Math.random() < (remainingMs <= ONE_MINUTE_MS ? 0.25 : 0.04)) {
+                triggerHeatrayFlash();
+            }
+        }
+
+        function renderTime(d, h, m, s) {
+            elDays.textContent = String(d).padStart(2, '0');
+            elHours.textContent = String(h).padStart(2, '0');
+            elMinutes.textContent = String(m).padStart(2, '0');
+            elSeconds.textContent = String(s).padStart(2, '0');
+        }
+
+        // T-0 Zero Release Sequence
+        function triggerReleaseSequence() {
+            if (hasTriggeredRelease) return;
+            hasTriggeredRelease = true;
+
+            document.body.classList.remove('shaking');
+            elTitleHeader.classList.add('fade-out');
+            elCountdownStage.classList.add('fade-out');
+
+            // Blinding Crimson Release Flash
+            elHeatrayFlash.classList.add('release-flash', 'active');
+            setTimeout(() => elHeatrayFlash.classList.remove('active'), 1800);
+
+            if (musicAudio) musicAudio.pause();
+            if (audioEnabled && hornAudio) {
+                hornAudio.currentTime = 0;
+                hornAudio.play().catch(err => console.warn('Horn audio playback blocked:', err));
+            }
+
+            setTimeout(() => {
+                elRevealStage.removeAttribute('aria-hidden');
+                elRevealStage.classList.add('active');
+                elTitleHeader.style.display = 'none';
+                elCountdownStage.style.display = 'none';
+            }, 1500);
+        }
+
+        // Debug / Demo Panel Controls
+        function getDemoDurationMs() {
+            const days = Math.max(0, Number.parseInt(elDemoDays.value, 10) || 0);
+            const hours = Math.max(0, Number.parseInt(elDemoHours.value, 10) || 0);
+            const minutes = Math.max(0, Number.parseInt(elDemoMinutes.value, 10) || 0);
+            const seconds = Math.max(0, Number.parseInt(elDemoSeconds.value, 10) || 0);
+            return (((days * 24 + hours) * 60 + minutes) * 60 + seconds) * 1000;
+        }
+
+        function startDemoCountdown() {
+            clearInterval(demoInterval);
+            demoMode = true;
+            hasTriggeredRelease = false;
+
+            elTitleHeader.style.display = '';
+            elTitleHeader.classList.remove('fade-out');
+            elCountdownStage.style.display = '';
+            elCountdownStage.classList.remove('fade-out');
+            elRevealStage.classList.remove('active');
+            elRevealStage.classList.add('aria-hidden');
+            elRevealStage.setAttribute('aria-hidden', 'true');
+
+            let remainingMs = getDemoDurationMs();
+            function demoStep() {
+                const totalSeconds = Math.ceil(remainingMs / 1000);
+                const days = Math.floor(totalSeconds / (3600 * 24));
+                const hours = Math.floor((totalSeconds % (3600 * 24)) / 3600);
+                const minutes = Math.floor((totalSeconds % 3600) / 60);
+                const seconds = totalSeconds % 60;
+
+                renderTime(days, hours, minutes, seconds);
+                updateAtmosphere(remainingMs);
+
+                if (remainingMs <= 0) {
+                    clearInterval(demoInterval);
+                    triggerReleaseSequence();
+                    return;
+                }
+                remainingMs -= 1000;
+            }
+            demoStep();
+            demoInterval = setInterval(demoStep, 1000);
+        }
+
+        function showDemoEndState() {
+            clearInterval(demoInterval);
+            demoMode = true;
+            hasTriggeredRelease = false;
+            renderTime(0, 0, 0, 0);
+            triggerReleaseSequence();
+        }
+
+        function hideDemoPanel() {
+            elDemoPanel.classList.remove('active');
+            elDemoPanel.setAttribute('aria-hidden', 'true');
+        }
+
+        function openDemoPanel() {
+            elDemoPanel.classList.add('active');
+            elDemoPanel.setAttribute('aria-hidden', 'false');
+        }
+
+        document.getElementById('demo-run').addEventListener('click', startDemoCountdown);
+        document.getElementById('demo-end').addEventListener('click', showDemoEndState);
+        document.getElementById('demo-hide').addEventListener('click', hideDemoPanel);
+        document.getElementById('demo-close').addEventListener('click', hideDemoPanel);
+
+        // Initialize Audio & Run live countdown loop
+        initAudioEngine();
+        updateCountdown();
+        countdownInterval = setInterval(updateCountdown, 1000);
+    </script>
 </body>
 </html>
