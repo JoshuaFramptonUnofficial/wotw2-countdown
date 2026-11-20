@@ -8,20 +8,23 @@
 // Release Date: 20 November 2026 at 5:00 PM Eastern Standard Time (UTC-5)
 const TARGET_DATE_ISO = '2026-11-20T17:00:00-05:00';
 
-// Audio Playlist Array — Add or remove background music filenames here
+// Audio Playlist Array
 const MUSIC_PLAYLIST = [
     'music1.mp3',
     'music2.mp3',
     'music3.mp3'
 ];
 
+// Average duration per track in seconds (used for global Unix sync calculation)
+const TRACK_DURATION_SEC = 180;
+
 // Horn Audio Filename
 const HORN_AUDIO_FILE = 'horn.mp3';
 
-// Reference total duration for Weed Growth Progression (14 Days in ms)
-const WEED_START_WINDOW_MS = 14 * 24 * 60 * 60 * 1000;
+// 7 Hours in milliseconds (Weed crawling threshold)
+const SEVEN_HOURS_MS = 7 * 60 * 60 * 1000;
 
-// Post-release decay duration (in seconds)
+// Post-release ash-grey decay duration in seconds
 const DECAY_DURATION_SEC = 45;
 
 // ------------------------------------------
@@ -29,13 +32,11 @@ const DECAY_DURATION_SEC = 45;
 // ------------------------------------------
 const targetTimestamp = new Date(TARGET_DATE_ISO).getTime();
 let audioEnabled = false;
-let currentTrackIndex = 0;
 let musicAudio = null;
 let hornAudio = null;
 let hasTriggeredRelease = false;
 let countdownInterval = null;
 let demoInterval = null;
-let releaseRevealTimeout = null;
 let demoMode = false;
 let soundButtonClicks = 0;
 let soundButtonClickReset = null;
@@ -55,35 +56,50 @@ const elDemoMinutes = document.getElementById('demo-minutes');
 const elDemoSeconds = document.getElementById('demo-seconds');
 
 // ------------------------------------------
-// Audio Initialization & Toggle
+// Audio System & Mathematical Global Sync
 // ------------------------------------------
 function initAudio() {
     musicAudio = new Audio();
     musicAudio.loop = false;
     musicAudio.volume = 0.25;
 
-    // Cycle to next track when current track finishes
+    // Preload Horn Audio so it fires cleanly at T-0
+    hornAudio = new Audio(HORN_AUDIO_FILE);
+    hornAudio.volume = 1.0;
+    hornAudio.load();
+
     musicAudio.addEventListener('ended', () => {
         if (MUSIC_PLAYLIST.length > 0) {
-            currentTrackIndex = (currentTrackIndex + 1) % MUSIC_PLAYLIST.length;
-            playCurrentTrack();
+            syncGlobalAudio();
         }
     });
 
-    // Audio error fallback logging
     musicAudio.addEventListener('error', () => {
-        console.warn('Audio track load error for:', MUSIC_PLAYLIST[currentTrackIndex]);
+        console.warn('Audio file missing or blocked:', MUSIC_PLAYLIST[0]);
     });
-
-    hornAudio = new Audio(HORN_AUDIO_FILE);
-    hornAudio.volume = 1.0;
 }
 
-function playCurrentTrack() {
-    if (!audioEnabled || MUSIC_PLAYLIST.length === 0) return;
-    musicAudio.src = MUSIC_PLAYLIST[currentTrackIndex];
+// Global Unix epoch synchronization so every visitor hears the exact same playback position
+function syncGlobalAudio() {
+    if (!audioEnabled || MUSIC_PLAYLIST.length === 0 || !musicAudio) return;
+
+    const epochSec = Math.floor(Date.now() / 1000);
+    const trackIndex = Math.floor(epochSec / TRACK_DURATION_SEC) % MUSIC_PLAYLIST.length;
+    const trackPosition = epochSec % TRACK_DURATION_SEC;
+
+    const selectedTrack = MUSIC_PLAYLIST[trackIndex];
+    if (musicAudio.src !== selectedTrack && !musicAudio.src.endsWith(selectedTrack)) {
+        musicAudio.src = selectedTrack;
+    }
+
+    try {
+        musicAudio.currentTime = trackPosition;
+    } catch (e) {
+        // Fallback if metadata not loaded yet
+    }
+
     musicAudio.play().catch(err => {
-        console.warn('Playback prevented by browser until user interaction:', err);
+        console.warn('Browser blocked autoplay until user tap:', err);
     });
 }
 
@@ -97,7 +113,7 @@ function toggleAudio() {
         elSoundToggle.classList.add('audio-active');
         elSoundToggle.setAttribute('aria-label', 'Disable sound');
         elSoundToggle.setAttribute('aria-pressed', 'true');
-        playCurrentTrack();
+        syncGlobalAudio();
     } else {
         elSoundToggle.classList.remove('audio-active');
         elSoundToggle.classList.add('audio-muted');
@@ -107,15 +123,16 @@ function toggleAudio() {
     }
 }
 
+// 6-Click Secret Gesture to Open Visual Debug/Demo Panel
 function handleSoundToggleClick() {
     toggleAudio();
     soundButtonClicks += 1;
     clearTimeout(soundButtonClickReset);
     soundButtonClickReset = setTimeout(() => {
         soundButtonClicks = 0;
-    }, 5000);
+    }, 4000);
 
-    if (soundButtonClicks === 6) {
+    if (soundButtonClicks >= 6) {
         soundButtonClicks = 0;
         openDemoPanel();
     }
@@ -124,13 +141,17 @@ function handleSoundToggleClick() {
 elSoundToggle.addEventListener('click', handleSoundToggleClick);
 
 // ------------------------------------------
-// Dynamic Volume Escalation
+// Audio Volume & Ducking Controller
 // ------------------------------------------
 function updateAudioVolume(remainingMs) {
     if (!musicAudio || !audioEnabled || hasTriggeredRelease) return;
 
-    if (remainingMs <= 60000) {
-        // Final minute: Max intensity volume (~0.85)
+    // T-5 Seconds Ducking: Fade music down to silence for the Horn release blast
+    if (remainingMs <= 5000 && remainingMs > 0) {
+        const fadeRatio = Math.max(0, remainingMs / 5000);
+        musicAudio.volume = 0.85 * fadeRatio;
+    } else if (remainingMs <= 60000) {
+        // Final minute: Maximum intensity volume (~0.85)
         musicAudio.volume = 0.85;
     } else if (remainingMs <= 600000) {
         // Final 10 minutes: Escalating volume (~0.5)
@@ -142,7 +163,7 @@ function updateAudioVolume(remainingMs) {
 }
 
 // ------------------------------------------
-// Red Weed Growth & Decay Controller
+// Red Weed Growth & Decay Logic
 // ------------------------------------------
 function updateRedWeedProgress(remainingMs) {
     if (hasTriggeredRelease) return;
@@ -150,13 +171,13 @@ function updateRedWeedProgress(remainingMs) {
     let progress = 0;
     if (remainingMs <= 0) {
         progress = 1.0;
-    } else if (remainingMs < WEED_START_WINDOW_MS) {
-        progress = 1.0 - (remainingMs / WEED_START_WINDOW_MS);
-        if (remainingMs <= 60000) {
-            progress = Math.max(progress, 0.95);
-        }
+    } else if (remainingMs <= SEVEN_HOURS_MS) {
+        // Visible vines creeping in starting from 7 hours left
+        const elapsed7h = 1.0 - (remainingMs / SEVEN_HOURS_MS);
+        progress = 0.25 + (0.75 * Math.pow(elapsed7h, 1.2));
     } else {
-        progress = 0.05;
+        // More than 7 hours left: subtle background edge trace
+        progress = 0.08;
     }
 
     document.documentElement.style.setProperty('--weed-progress', progress.toFixed(4));
@@ -171,11 +192,11 @@ function startPostReleaseDecay() {
         const factor = Math.min(1, elapsed / durationMs);
 
         const saturation = Math.max(0, 100 - (factor * 100));
-        const brightness = Math.max(0.45, 1.0 - (factor * 0.55));
+        const brightness = Math.max(0.4, 1.0 - (factor * 0.6));
 
         document.documentElement.style.setProperty('--weed-saturation', `${saturation.toFixed(1)}%`);
         document.documentElement.style.setProperty('--weed-brightness', brightness.toFixed(2));
-        document.documentElement.style.setProperty('--horizon-red', '#140c0e');
+        document.documentElement.style.setProperty('--horizon-red', '#120b0d');
 
         if (factor < 1) {
             requestAnimationFrame(decayStep);
@@ -186,7 +207,7 @@ function startPostReleaseDecay() {
 }
 
 // ------------------------------------------
-// Countdown Timer Loop
+// Main Countdown Loop
 // ------------------------------------------
 function updateCountdown() {
     if (demoMode) return;
@@ -220,47 +241,41 @@ function renderTime(d, h, m, s) {
 }
 
 // ------------------------------------------
-// Zero Transition Sequence
+// Zero Release Transition Sequence
 // ------------------------------------------
 function triggerReleaseSequence() {
     if (hasTriggeredRelease) return;
     hasTriggeredRelease = true;
 
-    // 1. Set Weed to max growth
+    // 1. Set Red Weed to 100% max organic growth
     document.documentElement.style.setProperty('--weed-progress', '1.0');
 
-    // 2. Fade out countdown stage
+    // 2. Fade out countdown numbers
     elCountdownStage.classList.add('fade-out');
 
-    // 3. Audio handling: Fade out music, play Horn
-    if (!demoMode && audioEnabled && musicAudio) {
-        let fadeVolume = musicAudio.volume;
-        const fadeInterval = setInterval(() => {
-            fadeVolume -= 0.05;
-            if (fadeVolume <= 0) {
-                musicAudio.pause();
-                clearInterval(fadeInterval);
-            } else {
-                musicAudio.volume = fadeVolume;
-            }
-        }, 100);
-
-        if (hornAudio) {
-            hornAudio.play().catch(err => console.warn('Horn audio playback blocked:', err));
-        }
+    // 3. Silence Music and Play Tripod Horn
+    if (musicAudio) {
+        musicAudio.pause();
+    }
+    if (audioEnabled && hornAudio) {
+        hornAudio.currentTime = 0;
+        hornAudio.play().catch(err => console.warn('Horn audio playback blocked:', err));
     }
 
-    // 4. Reveal Download Button
-    releaseRevealTimeout = setTimeout(() => {
+    // 4. Reveal Download Stage
+    setTimeout(() => {
         elRevealStage.removeAttribute('aria-hidden');
         elRevealStage.classList.add('active');
         elCountdownStage.style.display = 'none';
 
-        // 5. Begin 45-second organic red weed decay (wither to ash grey)
+        // 5. Begin 45-second organic red weed decay to ash grey
         startPostReleaseDecay();
     }, 1500);
 }
 
+// ------------------------------------------
+// Demo / Test Panel Functionality
+// ------------------------------------------
 function getDemoDurationMs() {
     const days = Math.max(0, Number.parseInt(elDemoDays.value, 10) || 0);
     const hours = Math.max(0, Number.parseInt(elDemoHours.value, 10) || 0);
@@ -269,24 +284,20 @@ function getDemoDurationMs() {
     return (((days * 24 + hours) * 60 + minutes) * 60 + seconds) * 1000;
 }
 
-function resetReleaseView() {
-    clearTimeout(releaseRevealTimeout);
+function startDemoCountdown() {
     clearInterval(demoInterval);
+    demoMode = true;
     hasTriggeredRelease = false;
+
     elCountdownStage.style.display = '';
     elCountdownStage.classList.remove('fade-out');
     elRevealStage.classList.remove('active');
     elRevealStage.classList.add('aria-hidden');
     elRevealStage.setAttribute('aria-hidden', 'true');
-    document.documentElement.style.setProperty('--weed-progress', '0.05');
+    document.documentElement.style.setProperty('--weed-progress', '0.08');
     document.documentElement.style.setProperty('--weed-saturation', '100%');
     document.documentElement.style.setProperty('--weed-brightness', '1');
-    document.documentElement.style.setProperty('--horizon-red', '#3b0008');
-}
 
-function startDemoCountdown() {
-    resetReleaseView();
-    demoMode = true;
     let remainingMs = getDemoDurationMs();
 
     function demoStep() {
@@ -298,6 +309,7 @@ function startDemoCountdown() {
 
         renderTime(days, hours, minutes, seconds);
         updateRedWeedProgress(remainingMs);
+        updateAudioVolume(remainingMs);
 
         if (remainingMs <= 0) {
             clearInterval(demoInterval);
@@ -313,32 +325,29 @@ function startDemoCountdown() {
 }
 
 function showDemoEndState() {
-    resetReleaseView();
+    clearInterval(demoInterval);
     demoMode = true;
+    hasTriggeredRelease = false;
     renderTime(0, 0, 0, 0);
     triggerReleaseSequence();
 }
 
-function closeDemoPanel() {
-    clearInterval(demoInterval);
-    demoMode = false;
-    resetReleaseView();
-    updateCountdown();
+function hideDemoPanel() {
+    // Simply hide the debug menu UI overlay without breaking or resetting any running test simulation
     elDemoPanel.classList.remove('active');
     elDemoPanel.setAttribute('aria-hidden', 'true');
 }
 
 function openDemoPanel() {
-    demoMode = true;
-    clearInterval(demoInterval);
     elDemoPanel.classList.add('active');
     elDemoPanel.setAttribute('aria-hidden', 'false');
 }
 
 document.getElementById('demo-run').addEventListener('click', startDemoCountdown);
 document.getElementById('demo-end').addEventListener('click', showDemoEndState);
-document.getElementById('demo-close').addEventListener('click', closeDemoPanel);
+document.getElementById('demo-hide').addEventListener('click', hideDemoPanel);
+document.getElementById('demo-close').addEventListener('click', hideDemoPanel);
 
-// Initialize on page load
+// Initialize live countdown on page load
 updateCountdown();
 countdownInterval = setInterval(updateCountdown, 1000);

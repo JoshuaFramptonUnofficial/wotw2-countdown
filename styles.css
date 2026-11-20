@@ -2,16 +2,16 @@
    05 REVIVE: UPDATE 2.0 — Atmospheric Stylesheet
    ========================================== */
 
-/* CSS Custom Properties for Dynamic Red Weed Progression & Decay */
 :root {
-    --weed-progress: 0;        /* 0 to 1 (0% to 100% growth) */
-    --weed-saturation: 100%;   /* Drops to 0% during post-release decay */
+    --weed-progress: 0;        /* 0 to 1 (dynamic growth progress) */
+    --weed-saturation: 100%;   /* Drops to 0% during post-release ash-grey decay */
     --weed-brightness: 1;      /* Drops during post-release decay */
     --horizon-red: #3b0008;
     --crimson-glow: #8b0000;
     --blood-red: #cc0000;
+    --bright-red: #ff1a24;
     --bg-dark: #030002;
-    --text-primary: #f0f0f0;
+    --text-primary: #ffffff;
     --text-muted: #888888;
 }
 
@@ -33,10 +33,10 @@ html, body {
     -webkit-font-smoothing: antialiased;
 }
 
-/* Base Body Layout */
 body {
-    display: grid;
-    place-items: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     position: relative;
 }
 
@@ -52,28 +52,28 @@ body {
             var(--horizon-red) 0%, 
             #150004 45%, 
             var(--bg-dark) 90%);
-    transition: background 1s ease;
+    transition: background 1.5s ease;
 }
 
-/* Animated Haze Layers */
+/* Animated Fog / Haze Layers */
 .haze-layer {
     position: absolute;
     inset: -50%;
     z-index: 2;
     pointer-events: none;
-    opacity: calc(0.2 + (var(--weed-progress) * 0.25));
+    opacity: calc(0.25 + (var(--weed-progress) * 0.35));
     mix-blend-mode: screen;
 }
 
 .haze-1 {
-    background: radial-gradient(circle at 30% 60%, rgba(139, 0, 0, 0.35) 0%, transparent 60%),
-                radial-gradient(circle at 70% 40%, rgba(80, 0, 10, 0.4) 0%, transparent 50%);
+    background: radial-gradient(circle at 30% 60%, rgba(139, 0, 0, 0.4) 0%, transparent 60%),
+                radial-gradient(circle at 70% 40%, rgba(90, 0, 10, 0.45) 0%, transparent 50%);
     animation: hazeShift1 28s infinite alternate ease-in-out;
 }
 
 .haze-2 {
-    background: radial-gradient(circle at 70% 70%, rgba(180, 10, 20, 0.25) 0%, transparent 55%),
-                radial-gradient(circle at 20% 30%, rgba(100, 0, 0, 0.3) 0%, transparent 50%);
+    background: radial-gradient(circle at 70% 70%, rgba(190, 10, 20, 0.3) 0%, transparent 55%),
+                radial-gradient(circle at 20% 30%, rgba(110, 0, 0, 0.35) 0%, transparent 50%);
     animation: hazeShift2 35s infinite alternate ease-in-out;
 }
 
@@ -88,7 +88,7 @@ body {
 }
 
 /* ==========================================
-   Organic Red Weed CSS Progression & Decay
+   Organic Red Weed CSS & SVG Progression
    ========================================== */
 .weed-container {
     position: absolute;
@@ -103,75 +103,97 @@ body {
     position: absolute;
     inset: 0;
     background: radial-gradient(circle at 50% 50%, 
-        transparent calc(70% - (var(--weed-progress) * 45%)), 
-        rgba(30, 0, 5, calc(0.3 + var(--weed-progress) * 0.5)) calc(85% - (var(--weed-progress) * 35%)), 
-        rgba(100, 0, 12, calc(0.4 + var(--weed-progress) * 0.55)) 100%);
-    transition: background 0.5s ease-out;
+        transparent calc(72% - (var(--weed-progress) * 48%)), 
+        rgba(35, 0, 6, calc(0.25 + var(--weed-progress) * 0.55)) calc(85% - (var(--weed-progress) * 35%)), 
+        rgba(120, 0, 15, calc(0.45 + var(--weed-progress) * 0.5)) 100%);
+    transition: background 0.6s ease-out;
 }
 
-.weed-tendril {
+/* SVG Prop-Style Branching Tendrils */
+.vine-svg {
     position: absolute;
-    background-size: cover;
-    background-repeat: no-repeat;
-    mix-blend-mode: color-dodge;
-    transition: transform 0.8s ease-out, opacity 0.8s ease-out;
+    pointer-events: none;
+    filter: drop-shadow(0 0 10px rgba(220, 0, 25, 0.75)) drop-shadow(0 0 25px rgba(139, 0, 0, 0.9));
+    transition: transform 1s cubic-bezier(0.16, 1, 0.3, 1), opacity 1s ease;
+}
+
+.vine-main {
+    fill: none;
+    stroke: #bb0014;
+    stroke-width: 14;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.vine-sub {
+    fill: none;
+    stroke: #ff1a24;
+    stroke-width: 7;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-dasharray: 12 6;
+}
+
+.vine-web {
+    fill: none;
+    stroke: #88000d;
+    stroke-width: 4;
+    stroke-linecap: round;
 }
 
 .tendril-top {
     top: 0;
     left: 0;
     right: 0;
-    height: 40vh;
-    background: radial-gradient(ellipse 100% 70% at 50% 0%, 
-        rgba(160, 0, 15, calc(0.1 + var(--weed-progress) * 0.8)) 0%, 
-        rgba(80, 0, 5, calc(var(--weed-progress) * 0.6)) 50%, 
-        transparent 100%);
-    transform: translateY(calc(-60% + (var(--weed-progress) * 60%)));
+    width: 100%;
+    height: 48vh;
+    transform-origin: top center;
+    transform: translateY(calc(-75% + (var(--weed-progress) * 75%))) scaleY(calc(0.5 + (var(--weed-progress) * 0.5)));
+    opacity: calc(0.2 + (var(--weed-progress) * 0.8));
 }
 
 .tendril-bottom {
     bottom: 0;
     left: 0;
     right: 0;
-    height: 45vh;
-    background: radial-gradient(ellipse 100% 80% at 50% 100%, 
-        rgba(180, 0, 20, calc(0.15 + var(--weed-progress) * 0.85)) 0%, 
-        rgba(90, 0, 8, calc(var(--weed-progress) * 0.7)) 50%, 
-        transparent 100%);
-    transform: translateY(calc(60% - (var(--weed-progress) * 60%)));
+    width: 100%;
+    height: 52vh;
+    transform-origin: bottom center;
+    transform: translateY(calc(75% - (var(--weed-progress) * 75%))) scaleY(calc(0.5 + (var(--weed-progress) * 0.5)));
+    opacity: calc(0.2 + (var(--weed-progress) * 0.8));
 }
 
 .tendril-left {
     top: 0;
     bottom: 0;
     left: 0;
-    width: 35vw;
-    background: radial-gradient(ellipse 80% 100% at 0% 50%, 
-        rgba(150, 0, 10, calc(0.1 + var(--weed-progress) * 0.8)) 0%, 
-        transparent 100%);
-    transform: translateX(calc(-65% + (var(--weed-progress) * 65%)));
+    width: 42vw;
+    height: 100%;
+    transform-origin: left center;
+    transform: translateX(calc(-75% + (var(--weed-progress) * 75%))) scaleX(calc(0.5 + (var(--weed-progress) * 0.5)));
+    opacity: calc(0.2 + (var(--weed-progress) * 0.8));
 }
 
 .tendril-right {
     top: 0;
     bottom: 0;
     right: 0;
-    width: 35vw;
-    background: radial-gradient(ellipse 80% 100% at 100% 50%, 
-        rgba(150, 0, 10, calc(0.1 + var(--weed-progress) * 0.8)) 0%, 
-        transparent 100%);
-    transform: translateX(calc(65% - (var(--weed-progress) * 65%)));
+    width: 42vw;
+    height: 100%;
+    transform-origin: right center;
+    transform: translateX(calc(75% - (var(--weed-progress) * 75%))) scaleX(calc(0.5 + (var(--weed-progress) * 0.5)));
+    opacity: calc(0.2 + (var(--weed-progress) * 0.8));
 }
 
-/* Custom organic noise texture overlay */
+/* Texture Overlay */
 .weed-container::after {
     content: "";
     position: absolute;
     inset: 0;
-    background-image: radial-gradient(circle at 10% 20%, rgba(139, 0, 0, 0.4) 0%, transparent 15%),
-                      radial-gradient(circle at 90% 80%, rgba(160, 0, 20, 0.35) 0%, transparent 20%),
-                      radial-gradient(circle at 85% 15%, rgba(120, 0, 0, 0.3) 0%, transparent 18%),
-                      radial-gradient(circle at 15% 85%, rgba(170, 0, 10, 0.38) 0%, transparent 22%);
+    background-image: radial-gradient(circle at 12% 18%, rgba(160, 0, 15, 0.45) 0%, transparent 18%),
+                      radial-gradient(circle at 88% 82%, rgba(180, 0, 20, 0.4) 0%, transparent 22%),
+                      radial-gradient(circle at 82% 12%, rgba(140, 0, 10, 0.35) 0%, transparent 20%),
+                      radial-gradient(circle at 18% 88%, rgba(190, 0, 25, 0.42) 0%, transparent 24%);
     opacity: var(--weed-progress);
     transition: opacity 1s ease;
 }
@@ -184,27 +206,24 @@ body {
     top: 24px;
     right: 24px;
     z-index: 100;
-    width: 44px;
-    height: 44px;
+    width: 46px;
+    height: 46px;
     display: grid;
     place-items: center;
-    align-items: center;
-    background: rgba(10, 2, 4, 0.75);
-    border: 1px solid rgba(139, 0, 0, 0.4);
-    color: #ff3b43;
+    background: rgba(10, 2, 4, 0.8);
+    border: 1px solid rgba(180, 0, 20, 0.45);
+    color: var(--bright-red);
     padding: 10px;
-    border-radius: 4px;
+    border-radius: 6px;
     cursor: pointer;
     backdrop-filter: blur(8px);
     transition: all 0.3s ease;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.7);
 }
 
 .sound-icon {
-    display: block;
     width: 22px;
     height: 22px;
-    overflow: visible;
     fill: none;
     stroke: currentColor;
     stroke-width: 1.8;
@@ -218,53 +237,51 @@ body {
     width: 30px;
     height: 3px;
     border-radius: 2px;
-    background: #ff2029;
+    background: #ff1a24;
     transform: rotate(-45deg);
-    box-shadow: 0 0 5px rgba(255, 32, 41, 0.5);
+    box-shadow: 0 0 6px rgba(255, 26, 36, 0.7);
 }
 
 .sound-toggle:hover {
-    border-color: var(--blood-red);
-    background: rgba(25, 4, 8, 0.9);
+    border-color: var(--bright-red);
+    background: rgba(25, 4, 8, 0.95);
 }
 
-/* Dynamic Sound Pulse for Unmuted User Prompt */
 .sound-toggle.audio-muted {
     animation: soundPulse 2s infinite ease-in-out;
 }
 
 @keyframes soundPulse {
-    0% {
+    0%, 100% {
         box-shadow: 0 0 0 0 rgba(180, 0, 20, 0.7), 0 4px 20px rgba(0, 0, 0, 0.6);
         border-color: rgba(180, 0, 20, 0.8);
     }
     50% {
-        box-shadow: 0 0 15px 4px rgba(180, 0, 20, 0.3), 0 4px 20px rgba(0, 0, 0, 0.6);
-        border-color: rgba(255, 50, 50, 1);
-    }
-    100% {
-        box-shadow: 0 0 0 0 rgba(180, 0, 20, 0), 0 4px 20px rgba(0, 0, 0, 0.6);
-        border-color: rgba(180, 0, 20, 0.8);
+        box-shadow: 0 0 16px 4px rgba(255, 26, 36, 0.4), 0 4px 20px rgba(0, 0, 0, 0.6);
+        border-color: rgba(255, 60, 70, 1);
     }
 }
 
 .sound-toggle.audio-active {
-    border-color: rgba(255, 50, 50, 0.8);
-    color: #ff3b43;
+    border-color: rgba(255, 40, 50, 0.8);
+    color: var(--bright-red);
 }
 
+/* ==========================================
+   Hidden Debug / Demo Panel
+   ========================================== */
 .demo-panel {
     position: fixed;
-    top: 82px;
+    top: 80px;
     right: 24px;
     z-index: 110;
-    width: min(390px, calc(100vw - 32px));
+    width: min(380px, calc(100vw - 32px));
     padding: 1.25rem;
     color: var(--text-primary);
-    background: rgba(10, 2, 4, 0.96);
-    border: 1px solid rgba(255, 32, 41, 0.7);
+    background: rgba(12, 2, 5, 0.96);
+    border: 1px solid rgba(255, 30, 40, 0.75);
     border-radius: 6px;
-    box-shadow: 0 0 30px rgba(139, 0, 0, 0.55), 0 12px 30px rgba(0, 0, 0, 0.7);
+    box-shadow: 0 0 35px rgba(139, 0, 0, 0.6), 0 12px 30px rgba(0, 0, 0, 0.8);
     opacity: 0;
     pointer-events: none;
     transform: translateY(-10px);
@@ -277,17 +294,36 @@ body {
     transform: translateY(0);
 }
 
-.demo-panel h2 {
+.demo-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     margin-bottom: 0.35rem;
-    color: #ff3b43;
-    font-size: 1rem;
+}
+
+.demo-header h2 {
+    color: var(--bright-red);
+    font-size: 0.95rem;
     letter-spacing: 0.18em;
+}
+
+.demo-close-btn {
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    font-size: 1rem;
+    cursor: pointer;
+}
+
+.demo-close-btn:hover {
+    color: #ffffff;
 }
 
 .demo-panel p {
     margin-bottom: 1rem;
     color: var(--text-muted);
-    font-size: 0.8rem;
+    font-size: 0.78rem;
+    line-height: 1.35;
 }
 
 .demo-time-fields {
@@ -306,10 +342,10 @@ body {
 .demo-time-fields input {
     width: 100%;
     margin-top: 0.35rem;
-    padding: 0.5rem 0.2rem;
+    padding: 0.45rem 0.2rem;
     color: #fff;
-    background: rgba(70, 0, 8, 0.8);
-    border: 1px solid rgba(255, 32, 41, 0.45);
+    background: rgba(60, 0, 8, 0.85);
+    border: 1px solid rgba(255, 30, 40, 0.5);
     border-radius: 3px;
     font: inherit;
     text-align: center;
@@ -324,29 +360,27 @@ body {
 
 .demo-actions button {
     flex: 1;
-    min-width: 105px;
-    padding: 0.6rem 0.45rem;
+    min-width: 100px;
+    padding: 0.6rem 0.4rem;
     color: #fff;
-    background: #5f0007;
+    background: #600008;
     border: 1px solid #d4141c;
     border-radius: 3px;
     cursor: pointer;
-    font-size: 0.65rem;
+    font-size: 0.62rem;
     font-weight: 700;
     letter-spacing: 0.08em;
 }
 
 .demo-actions button:hover {
-    background: #97000d;
+    background: #99000e;
 }
 
 /* ==========================================
    Main Content Layout
    ========================================== */
 .main-container {
-    position: absolute;
-    inset: 50% auto auto 50%;
-    transform: translate(-50%, -50%);
+    position: relative;
     z-index: 10;
     display: flex;
     flex-direction: column;
@@ -371,7 +405,7 @@ body {
     letter-spacing: 0.35em;
     text-transform: uppercase;
     color: #ffffff;
-    text-shadow: 0 0 30px rgba(139, 0, 0, 0.6), 0 4px 12px rgba(0, 0, 0, 0.9);
+    text-shadow: 0 0 30px rgba(139, 0, 0, 0.65), 0 4px 12px rgba(0, 0, 0, 0.95);
     margin: 0 auto;
     line-height: 1.1;
 }
@@ -382,12 +416,11 @@ body {
     letter-spacing: 0.45em;
     text-transform: uppercase;
     color: #aa2025;
-    margin-top: 0.75rem;
     margin: 0.75rem auto 0;
-    text-shadow: 0 0 15px rgba(170, 32, 37, 0.5);
+    text-shadow: 0 0 15px rgba(170, 32, 37, 0.55);
 }
 
-/* Countdown Grid */
+/* Countdown Stage */
 .countdown-stage {
     width: 100%;
     transition: opacity 1.5s ease, transform 1.5s ease;
@@ -449,19 +482,19 @@ body {
 }
 
 /* ==========================================
-   Reveal Download Stage
+   Reveal Stage & Overgrown Frame
    ========================================== */
 .reveal-stage {
     position: absolute;
-    top: 50%;
+    top: 60%;
     left: 50%;
     transform: translate(-50%, -50%) scale(0.8);
     opacity: 0;
     pointer-events: none;
     transition: opacity 2s ease 1s, transform 2s cubic-bezier(0.16, 1, 0.3, 1) 1s;
     z-index: 20;
-    width: 90%;
-    max-width: 500px;
+    width: 92%;
+    max-width: 520px;
 }
 
 .reveal-stage.active {
@@ -470,70 +503,32 @@ body {
     transform: translate(-50%, -50%) scale(1);
 }
 
-.download-weed {
+.download-vine-frame {
     position: absolute;
+    top: -30px;
+    left: -30px;
+    right: -30px;
+    bottom: -30px;
+    width: calc(100% + 60px);
+    height: calc(100% + 60px);
     z-index: 0;
     pointer-events: none;
-    opacity: 0;
-    filter: drop-shadow(0 0 7px rgba(255, 0, 20, 0.75));
-    transition: opacity 1.5s ease 1.2s;
+    filter: drop-shadow(0 0 12px rgba(255, 20, 30, 0.85));
 }
 
-.reveal-stage.active .download-weed {
-    opacity: 1;
+.download-vine-path {
+    fill: none;
+    stroke: #b80012;
+    stroke-width: 10;
+    stroke-dasharray: 1000;
+    stroke-dashoffset: 0;
 }
 
-.download-weed-left,
-.download-weed-right {
-    bottom: -48px;
-    width: 145px;
-    height: 190px;
-    border: 6px solid #a80014;
-    border-right: 0;
-    border-bottom: 0;
-    border-radius: 80% 0 0 0;
-    animation: weedCreep 4s infinite ease-in-out;
-}
-
-.download-weed-left {
-    left: -42px;
-    transform: rotate(-17deg);
-}
-
-.download-weed-right {
-    right: -42px;
-    transform: scaleX(-1) rotate(-17deg);
-    animation-delay: -1.5s;
-}
-
-.download-weed-top {
-    top: -64px;
-    left: 50%;
-    width: 110px;
-    height: 95px;
-    border-left: 5px solid #e0001b;
-    border-radius: 70% 0 0 0;
-    transform: translateX(-50%) rotate(18deg);
-    animation: weedReach 3.5s infinite ease-in-out;
-}
-
-@keyframes weedCreep {
-    0%, 100% { transform: rotate(-17deg) translate(0, 8px); }
-    50% { transform: rotate(-17deg) translate(10px, -4px); }
-}
-
-.download-weed-right {
-    animation-name: weedCreepRight;
-}
-
-@keyframes weedCreepRight {
-    0%, 100% { transform: scaleX(-1) rotate(-17deg) translate(0, 8px); }
-    50% { transform: scaleX(-1) rotate(-17deg) translate(10px, -4px); }
-}
-
-@keyframes weedReach {
-    0%, 100% { transform: translateX(-50%) rotate(18deg) translateY(8px); }
-    50% { transform: translateX(-50%) rotate(18deg) translateY(-5px); }
+.download-vine-sub {
+    fill: none;
+    stroke: #ff1a24;
+    stroke-width: 5;
+    stroke-dasharray: 8 4;
 }
 
 .download-btn {
@@ -551,7 +546,7 @@ body {
     font-weight: 900;
     letter-spacing: 0.3em;
     text-transform: uppercase;
-    box-shadow: 0 0 35px rgba(220, 0, 0, 0.6), 0 10px 30px rgba(0, 0, 0, 0.9);
+    box-shadow: 0 0 35px rgba(220, 0, 0, 0.65), 0 10px 30px rgba(0, 0, 0, 0.95);
     overflow: hidden;
     transition: all 0.4s ease;
     text-align: center;
@@ -560,7 +555,7 @@ body {
 .download-btn:hover {
     background: linear-gradient(135deg, #a30007 0%, #4a0004 100%);
     border-color: #ffffff;
-    box-shadow: 0 0 50px rgba(255, 30, 30, 0.9), 0 12px 40px rgba(0, 0, 0, 0.95);
+    box-shadow: 0 0 50px rgba(255, 30, 30, 0.95), 0 12px 40px rgba(0, 0, 0, 0.95);
     transform: translateY(-3px);
 }
 
@@ -570,7 +565,7 @@ body {
     left: -50%;
     width: 200%;
     height: 200%;
-    background: radial-gradient(circle, rgba(255, 255, 255, 0.2) 0%, transparent 60%);
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.25) 0%, transparent 60%);
     opacity: 0;
     transition: opacity 0.4s ease;
 }
@@ -621,9 +616,7 @@ body {
     }
 }
 
-/* ==========================================
-   Accessibility — Reduced Motion
-   ========================================== */
+/* Reduced Motion */
 @media (prefers-reduced-motion: reduce) {
     .haze-1, .haze-2, .sound-toggle.audio-muted, .time-separator {
         animation: none !important;
