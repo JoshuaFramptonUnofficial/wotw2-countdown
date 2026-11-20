@@ -185,21 +185,41 @@ body {
     top: 24px;
     right: 24px;
     z-index: 100;
-    display: flex;
+    width: 44px;
+    height: 44px;
+    display: grid;
+    place-items: center;
     align-items: center;
-    gap: 8px;
     background: rgba(10, 2, 4, 0.75);
     border: 1px solid rgba(139, 0, 0, 0.4);
-    color: var(--text-primary);
-    padding: 10px 18px;
+    color: #ff3b43;
+    padding: 10px;
     border-radius: 4px;
-    font-size: 0.75rem;
-    font-weight: 700;
-    letter-spacing: 0.15em;
     cursor: pointer;
     backdrop-filter: blur(8px);
     transition: all 0.3s ease;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
+}
+
+.sound-icon {
+    width: 22px;
+    height: 22px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.sound-toggle.audio-muted::after {
+    content: "";
+    position: absolute;
+    width: 30px;
+    height: 3px;
+    border-radius: 2px;
+    background: #ff2029;
+    transform: rotate(-45deg);
+    box-shadow: 0 0 5px rgba(255, 32, 41, 0.5);
 }
 
 .sound-toggle:hover {
@@ -228,8 +248,8 @@ body {
 }
 
 .sound-toggle.audio-active {
-    border-color: rgba(0, 200, 100, 0.5);
-    color: #4ade80;
+    border-color: rgba(255, 50, 50, 0.8);
+    color: #ff3b43;
 }
 
 /* ==========================================
@@ -428,8 +448,9 @@ body {
     .sound-toggle {
         top: 16px;
         right: 16px;
-        padding: 8px 12px;
-        font-size: 0.65rem;
+        width: 40px;
+        height: 40px;
+        padding: 9px;
     }
 }
 

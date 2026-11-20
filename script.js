@@ -41,8 +41,6 @@ const elHours = document.getElementById('hours');
 const elMinutes = document.getElementById('minutes');
 const elSeconds = document.getElementById('seconds');
 const elSoundToggle = document.getElementById('sound-toggle');
-const elSoundLabel = elSoundToggle.querySelector('.sound-label');
-const elSoundIcon = elSoundToggle.querySelector('.sound-icon');
 const elCountdownStage = document.getElementById('countdown-stage');
 const elRevealStage = document.getElementById('reveal-stage');
 
@@ -87,14 +85,14 @@ function toggleAudio() {
     if (audioEnabled) {
         elSoundToggle.classList.remove('audio-muted');
         elSoundToggle.classList.add('audio-active');
-        elSoundLabel.textContent = 'SOUND: ON';
-        elSoundIcon.textContent = '🔊';
+        elSoundToggle.setAttribute('aria-label', 'Disable sound');
+        elSoundToggle.setAttribute('aria-pressed', 'true');
         playCurrentTrack();
     } else {
         elSoundToggle.classList.remove('audio-active');
         elSoundToggle.classList.add('audio-muted');
-        elSoundLabel.textContent = 'SOUND: OFF';
-        elSoundIcon.textContent = '🔇';
+        elSoundToggle.setAttribute('aria-label', 'Enable sound');
+        elSoundToggle.setAttribute('aria-pressed', 'false');
         if (musicAudio) musicAudio.pause();
     }
 }
