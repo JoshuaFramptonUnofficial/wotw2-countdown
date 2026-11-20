@@ -34,6 +34,11 @@ let musicAudio = null;
 let hornAudio = null;
 let hasTriggeredRelease = false;
 let countdownInterval = null;
+let demoInterval = null;
+let releaseRevealTimeout = null;
+let demoMode = false;
+let soundButtonClicks = 0;
+let soundButtonClickReset = null;
 
 // DOM Elements
 const elDays = document.getElementById('days');
@@ -43,6 +48,11 @@ const elSeconds = document.getElementById('seconds');
 const elSoundToggle = document.getElementById('sound-toggle');
 const elCountdownStage = document.getElementById('countdown-stage');
 const elRevealStage = document.getElementById('reveal-stage');
+const elDemoPanel = document.getElementById('demo-panel');
+const elDemoDays = document.getElementById('demo-days');
+const elDemoHours = document.getElementById('demo-hours');
+const elDemoMinutes = document.getElementById('demo-minutes');
+const elDemoSeconds = document.getElementById('demo-seconds');
 
 // ------------------------------------------
 // Audio Initialization & Toggle
@@ -97,7 +107,21 @@ function toggleAudio() {
     }
 }
 
-elSoundToggle.addEventListener('click', toggleAudio);
+function handleSoundToggleClick() {
+    toggleAudio();
+    soundButtonClicks += 1;
+    clearTimeout(soundButtonClickReset);
+    soundButtonClickReset = setTimeout(() => {
+        soundButtonClicks = 0;
+    }, 2000);
+
+    if (soundButtonClicks === 6) {
+        soundButtonClicks = 0;
+        openDemoPanel();
+    }
+}
+
+elSoundToggle.addEventListener('click', handleSoundToggleClick);
 
 // ------------------------------------------
 // Dynamic Volume Escalation
@@ -165,6 +189,8 @@ function startPostReleaseDecay() {
 // Countdown Timer Loop
 // ------------------------------------------
 function updateCountdown() {
+    if (demoMode) return;
+
     const now = Date.now();
     const remainingMs = targetTimestamp - now;
 
@@ -207,7 +233,7 @@ function triggerReleaseSequence() {
     elCountdownStage.classList.add('fade-out');
 
     // 3. Audio handling: Fade out music, play Horn
-    if (audioEnabled && musicAudio) {
+    if (!demoMode && audioEnabled && musicAudio) {
         let fadeVolume = musicAudio.volume;
         const fadeInterval = setInterval(() => {
             fadeVolume -= 0.05;
@@ -225,7 +251,7 @@ function triggerReleaseSequence() {
     }
 
     // 4. Reveal Download Button
-    setTimeout(() => {
+    releaseRevealTimeout = setTimeout(() => {
         elRevealStage.removeAttribute('aria-hidden');
         elRevealStage.classList.add('active');
         elCountdownStage.style.display = 'none';
@@ -234,6 +260,84 @@ function triggerReleaseSequence() {
         startPostReleaseDecay();
     }, 1500);
 }
+
+function getDemoDurationMs() {
+    const days = Math.max(0, Number.parseInt(elDemoDays.value, 10) || 0);
+    const hours = Math.max(0, Number.parseInt(elDemoHours.value, 10) || 0);
+    const minutes = Math.max(0, Number.parseInt(elDemoMinutes.value, 10) || 0);
+    const seconds = Math.max(0, Number.parseInt(elDemoSeconds.value, 10) || 0);
+    return (((days * 24 + hours) * 60 + minutes) * 60 + seconds) * 1000;
+}
+
+function resetReleaseView() {
+    clearTimeout(releaseRevealTimeout);
+    clearInterval(demoInterval);
+    hasTriggeredRelease = false;
+    elCountdownStage.style.display = '';
+    elCountdownStage.classList.remove('fade-out');
+    elRevealStage.classList.remove('active');
+    elRevealStage.classList.add('aria-hidden');
+    elRevealStage.setAttribute('aria-hidden', 'true');
+    document.documentElement.style.setProperty('--weed-progress', '0.05');
+    document.documentElement.style.setProperty('--weed-saturation', '100%');
+    document.documentElement.style.setProperty('--weed-brightness', '1');
+    document.documentElement.style.setProperty('--horizon-red', '#3b0008');
+}
+
+function startDemoCountdown() {
+    resetReleaseView();
+    demoMode = true;
+    let remainingMs = getDemoDurationMs();
+
+    function demoStep() {
+        const totalSeconds = Math.ceil(remainingMs / 1000);
+        const days = Math.floor(totalSeconds / (3600 * 24));
+        const hours = Math.floor((totalSeconds % (3600 * 24)) / 3600);
+        const minutes = Math.floor((totalSeconds % 3600) / 60);
+        const seconds = totalSeconds % 60;
+
+        renderTime(days, hours, minutes, seconds);
+        updateRedWeedProgress(remainingMs);
+
+        if (remainingMs <= 0) {
+            clearInterval(demoInterval);
+            triggerReleaseSequence();
+            return;
+        }
+
+        remainingMs -= 1000;
+    }
+
+    demoStep();
+    demoInterval = setInterval(demoStep, 1000);
+}
+
+function showDemoEndState() {
+    resetReleaseView();
+    demoMode = true;
+    renderTime(0, 0, 0, 0);
+    triggerReleaseSequence();
+}
+
+function closeDemoPanel() {
+    clearInterval(demoInterval);
+    demoMode = false;
+    resetReleaseView();
+    updateCountdown();
+    elDemoPanel.classList.remove('active');
+    elDemoPanel.setAttribute('aria-hidden', 'true');
+}
+
+function openDemoPanel() {
+    demoMode = true;
+    clearInterval(demoInterval);
+    elDemoPanel.classList.add('active');
+    elDemoPanel.setAttribute('aria-hidden', 'false');
+}
+
+document.getElementById('demo-run').addEventListener('click', startDemoCountdown);
+document.getElementById('demo-end').addEventListener('click', showDemoEndState);
+document.getElementById('demo-close').addEventListener('click', closeDemoPanel);
 
 // Initialize on page load
 updateCountdown();

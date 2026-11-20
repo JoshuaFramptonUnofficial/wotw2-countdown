@@ -24,6 +24,23 @@
         </svg>
     </button>
 
+    <!-- Hidden visual demo controls: open by clicking the sound button six times -->
+    <aside id="demo-panel" class="demo-panel" aria-hidden="true">
+        <h2>RELEASE DEMO</h2>
+        <p>Set the countdown to preview the end state.</p>
+        <div class="demo-time-fields">
+            <label>DAYS<input id="demo-days" type="number" min="0" max="99" value="0"></label>
+            <label>HOURS<input id="demo-hours" type="number" min="0" max="23" value="0"></label>
+            <label>MINUTES<input id="demo-minutes" type="number" min="0" max="59" value="0"></label>
+            <label>SECONDS<input id="demo-seconds" type="number" min="0" max="59" value="10"></label>
+        </div>
+        <div class="demo-actions">
+            <button id="demo-run" type="button">RUN COUNTDOWN</button>
+            <button id="demo-end" type="button">SHOW END STATE</button>
+            <button id="demo-close" type="button">CLOSE</button>
+        </div>
+    </aside>
+
     <!-- Background Atmospheric & Red Weed Layers -->
     <div class="sky-background" aria-hidden="true"></div>
     <div class="haze-layer haze-1" aria-hidden="true"></div>
