@@ -35,9 +35,8 @@ html, body {
 
 /* Base Body Layout */
 body {
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    display: grid;
+    place-items: center;
     position: relative;
 }
 
@@ -345,7 +344,9 @@ body {
    Main Content Layout
    ========================================== */
 .main-container {
-    position: relative;
+    position: absolute;
+    inset: 50% auto auto 50%;
+    transform: translate(-50%, -50%);
     z-index: 10;
     display: flex;
     flex-direction: column;
@@ -359,7 +360,9 @@ body {
 
 /* Headers */
 .title-header {
+    width: 100%;
     margin-bottom: 3.5rem;
+    text-align: center;
 }
 
 .main-title {
@@ -369,7 +372,7 @@ body {
     text-transform: uppercase;
     color: #ffffff;
     text-shadow: 0 0 30px rgba(139, 0, 0, 0.6), 0 4px 12px rgba(0, 0, 0, 0.9);
-    margin-right: -0.35em;
+    margin: 0 auto;
     line-height: 1.1;
 }
 
@@ -380,7 +383,7 @@ body {
     text-transform: uppercase;
     color: #aa2025;
     margin-top: 0.75rem;
-    margin-right: -0.45em;
+    margin: 0.75rem auto 0;
     text-shadow: 0 0 15px rgba(170, 32, 37, 0.5);
 }
 
@@ -397,6 +400,9 @@ body {
 }
 
 .countdown-grid {
+    width: 100%;
+    max-width: 836px;
+    margin: 0 auto;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -447,7 +453,7 @@ body {
    ========================================== */
 .reveal-stage {
     position: absolute;
-    top: 60%;
+    top: 50%;
     left: 50%;
     transform: translate(-50%, -50%) scale(0.8);
     opacity: 0;

@@ -113,7 +113,7 @@ function handleSoundToggleClick() {
     clearTimeout(soundButtonClickReset);
     soundButtonClickReset = setTimeout(() => {
         soundButtonClicks = 0;
-    }, 2000);
+    }, 5000);
 
     if (soundButtonClicks === 6) {
         soundButtonClicks = 0;
