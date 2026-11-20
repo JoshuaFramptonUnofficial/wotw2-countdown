@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>05 REVIVE — Update 2.0 | Release Countdown</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Sound Toggle -->
+    <button id="sound-toggle" class="sound-toggle audio-muted" aria-label="Toggle Sound">
+        <span class="sound-icon" aria-hidden="true">🔊</span>
+        <span class="sound-label">SOUND: OFF</span>
+    </button>
+
+    <!-- Background Atmospheric & Red Weed Layers -->
+    <div class="sky-background" aria-hidden="true"></div>
+    <div class="haze-layer haze-1" aria-hidden="true"></div>
+    <div class="haze-layer haze-2" aria-hidden="true"></div>
+    
+    <!-- Organic Red Weed Growth Layers -->
+    <div class="weed-container" aria-hidden="true">
+        <div class="weed-tendril tendril-top"></div>
+        <div class="weed-tendril tendril-bottom"></div>
+        <div class="weed-tendril tendril-left"></div>
+        <div class="weed-tendril tendril-right"></div>
+        <div class="weed-vignette"></div>
+    </div>
+
+    <!-- Main Content Wrapper -->
+    <main class="main-container">
+        <!-- Header -->
+        <header class="title-header">
+            <h1 class="main-title">05 REVIVE</h1>
+            <h2 class="sub-title">UPDATE 2.0</h2>
+        </header>
+
+        <!-- Countdown Stage -->
+        <section id="countdown-stage" class="countdown-stage">
+            <div class="countdown-grid">
+                <div class="time-block">
+                    <span id="days" class="time-val">00</span>
+                    <span class="time-label">DAYS</span>
+                </div>
+                <div class="time-separator">:</div>
+                <div class="time-block">
+                    <span id="hours" class="time-val">00</span>
+                    <span class="time-label">HOURS</span>
+                </div>
+                <div class="time-separator">:</div>
+                <div class="time-block">
+                    <span id="minutes" class="time-val">00</span>
+                    <span class="time-label">MINUTES</span>
+                </div>
+                <div class="time-separator">:</div>
+                <div class="time-block">
+                    <span id="seconds" class="time-val">00</span>
+                    <span class="time-label">SECONDS</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Download Stage (Initially Hidden) -->
+        <section id="reveal-stage" class="reveal-stage aria-hidden" aria-hidden="true">
+            <a id="download-link" href="https://joshuaframptonunofficial.github.io/wotw-mods/" class="download-btn" target="_blank" rel="noopener noreferrer">
+                <span class="btn-glow"></span>
+                <span class="btn-text">DOWNLOAD UPDATE 2.0</span>
+            </a>
+        </section>
+    </main>
+
+    <script src="script.js"></script>
+</body>
+</html>
