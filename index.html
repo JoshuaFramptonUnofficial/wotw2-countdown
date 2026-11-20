@@ -41,36 +41,54 @@
     <div class="haze-layer haze-1" aria-hidden="true"></div>
     <div class="haze-layer haze-2" aria-hidden="true"></div>
     
-    <!-- Organic Red Weed Layer with Prop-Style SVG Vines -->
+    <!-- Organic Red Weed Layer with Jagged Branching SVG Tendrils -->
     <div class="weed-container" aria-hidden="true">
-        <!-- SVG Creeping Vines (Top, Bottom, Left, Right) -->
+        <!-- Top Jagged Vine Cluster -->
         <svg class="vine-svg tendril-top" viewBox="0 0 1000 400" preserveAspectRatio="none">
-            <path class="vine-main" d="M -50,-20 Q 200,180 500,120 T 1050,-10 M 150,50 Q 350,220 650,90 T 900,40" />
-            <path class="vine-sub" d="M 100,20 Q 250,140 400,80 T 800,20 M 300,110 Q 500,250 700,140 T 950,60" />
-            <path class="vine-web" d="M 220,100 C 280,160 340,140 380,90 M 550,130 C 620,200 680,170 740,110" />
+            <!-- Main Arterial Trunks -->
+            <path class="vine-shadow" d="M 50,-10 L 90,80 L 140,120 L 120,190 L 180,240 M 300,-10 L 320,90 L 280,160 L 340,220 M 600,-10 L 570,100 L 630,170 L 590,250 M 850,-10 L 820,110 L 880,180 L 840,260" />
+            <path class="vine-main" d="M 50,-10 L 90,80 L 140,120 L 120,190 L 180,240 M 300,-10 L 320,90 L 280,160 L 340,220 M 600,-10 L 570,100 L 630,170 L 590,250 M 850,-10 L 820,110 L 880,180 L 840,260" />
+            <!-- Jagged Branch Offshoots & Thorns -->
+            <path class="vine-branch" d="M 90,80 L 40,130 L 10,180 M 140,120 L 210,150 L 250,210 M 320,90 L 390,120 L 430,170 M 280,160 L 220,200 L 190,270 M 570,100 L 490,130 L 450,190 M 630,170 L 710,210 L 750,270 M 820,110 L 760,150 L 710,220 M 880,180 L 940,220 L 980,280" />
+            <path class="vine-sub" d="M 120,190 L 70,230 L 90,280 M 340,220 L 400,260 L 370,310 M 590,250 L 650,290 L 620,340 M 840,260 L 780,300 L 810,350" />
+            <!-- Vascular Capillary Nodes -->
+            <path class="vine-web" d="M 140,120 Q 200,90 280,160 M 320,90 Q 450,60 570,100 M 630,170 Q 750,130 820,110" />
         </svg>
+
+        <!-- Bottom Jagged Vine Cluster -->
         <svg class="vine-svg tendril-bottom" viewBox="0 0 1000 400" preserveAspectRatio="none">
-            <path class="vine-main" d="M -50,420 Q 250,200 500,260 T 1050,410 M 100,360 Q 400,160 700,290 T 950,350" />
-            <path class="vine-sub" d="M 200,380 Q 450,230 650,310 T 850,370 M 50,330 Q 300,170 550,270 T 800,340" />
-            <path class="vine-web" d="M 300,280 C 360,220 420,250 480,300 M 600,240 C 670,180 730,220 780,270" />
+            <path class="vine-shadow" d="M 80,410 L 120,320 L 70,270 L 130,190 L 90,130 M 350,410 L 310,310 L 370,230 L 320,150 M 650,410 L 680,300 L 620,220 L 670,140 M 900,410 L 860,300 L 920,230 L 870,150" />
+            <path class="vine-main" d="M 80,410 L 120,320 L 70,270 L 130,190 L 90,130 M 350,410 L 310,310 L 370,230 L 320,150 M 650,410 L 680,300 L 620,220 L 670,140 M 900,410 L 860,300 L 920,230 L 870,150" />
+            <path class="vine-branch" d="M 120,320 L 180,290 L 220,230 M 70,270 L 10,240 M 310,310 L 240,280 L 200,220 M 370,230 L 440,200 L 480,140 M 680,300 L 750,270 L 790,210 M 620,220 L 550,190 L 510,130 M 860,300 L 790,260 L 750,190 M 920,230 L 980,190" />
+            <path class="vine-sub" d="M 130,190 L 190,150 M 320,150 L 260,110 M 670,140 L 730,90 M 870,150 L 810,100" />
+            <path class="vine-web" d="M 70,270 Q 180,320 310,310 M 370,230 Q 500,260 620,220 M 680,300 Q 780,330 860,300" />
         </svg>
+
+        <!-- Left Jagged Vine Cluster -->
         <svg class="vine-svg tendril-left" viewBox="0 0 400 1000" preserveAspectRatio="none">
-            <path class="vine-main" d="M -20,-50 Q 180,250 120,500 T -10,1050 M 40,150 Q 220,400 90,700 T 30,900" />
-            <path class="vine-sub" d="M 20,100 Q 140,300 80,550 T 10,800 M 80,300 Q 240,550 130,800 T 50,950" />
-            <path class="vine-web" d="M 100,280 C 160,340 140,400 90,440 M 130,580 C 190,640 160,700 110,740" />
+            <path class="vine-shadow" d="M -10,80 L 110,130 L 160,90 L 230,160 M -10,350 L 100,320 L 170,380 L 240,330 L 290,390 M -10,650 L 120,610 L 180,680 L 250,620 M -10,880 L 90,830 L 160,890 L 220,840" />
+            <path class="vine-main" d="M -10,80 L 110,130 L 160,90 L 230,160 M -10,350 L 100,320 L 170,380 L 240,330 L 290,390 M -10,650 L 120,610 L 180,680 L 250,620 M -10,880 L 90,830 L 160,890 L 220,840" />
+            <path class="vine-branch" d="M 110,130 L 140,200 L 190,240 M 170,380 L 210,450 L 260,490 M 120,610 L 150,540 L 200,500 M 160,890 L 210,940" />
+            <path class="vine-sub" d="M 230,160 L 280,210 M 290,390 L 340,430 M 250,620 L 310,660 M 220,840 L 270,880" />
+            <path class="vine-web" d="M 160,90 Q 120,220 100,320 M 170,380 Q 140,500 120,610 M 180,680 Q 140,770 90,830" />
         </svg>
+
+        <!-- Right Jagged Vine Cluster -->
         <svg class="vine-svg tendril-right" viewBox="0 0 400 1000" preserveAspectRatio="none">
-            <path class="vine-main" d="M 420,-50 Q 200,250 260,500 T 410,1050 M 360,100 Q 160,380 290,700 T 350,950" />
-            <path class="vine-sub" d="M 380,200 Q 230,450 310,650 T 370,850 M 330,50 Q 170,300 270,550 T 340,800" />
-            <path class="vine-web" d="M 280,300 C 220,360 250,420 300,460 M 240,600 C 180,670 220,730 270,780" />
+            <path class="vine-shadow" d="M 410,100 L 290,140 L 240,90 L 170,170 M 410,380 L 300,340 L 230,400 L 160,340 L 110,410 M 410,680 L 280,630 L 220,700 L 150,630 M 410,900 L 310,850 L 240,910 L 180,850" />
+            <path class="vine-main" d="M 410,100 L 290,140 L 240,90 L 170,170 M 410,380 L 300,340 L 230,400 L 160,340 L 110,410 M 410,680 L 280,630 L 220,700 L 150,630 M 410,900 L 310,850 L 240,910 L 180,850" />
+            <path class="vine-branch" d="M 290,140 L 260,210 L 210,250 M 230,400 L 190,470 L 140,510 M 280,630 L 250,560 L 200,520 M 240,910 L 190,960" />
+            <path class="vine-sub" d="M 170,170 L 120,220 M 110,410 L 60,450 M 150,630 L 90,670 M 180,850 L 130,890" />
+            <path class="vine-web" d="M 240,90 Q 280,220 300,340 M 230,400 Q 260,520 280,630 M 220,700 Q 260,790 310,850" />
         </svg>
+
         <div class="weed-vignette"></div>
     </div>
 
     <!-- Main Content Container -->
     <main class="main-container">
         <!-- Header Title -->
-        <header class="title-header">
+        <header id="title-header" class="title-header">
             <h1 class="main-title">05 REVIVE</h1>
             <h2 class="sub-title">UPDATE 2.0</h2>
         </header>
@@ -100,13 +118,8 @@
             </div>
         </section>
 
-        <!-- Download Stage (Revealed at T-0) -->
+        <!-- Download Stage (Revealed at T-0 with clean stage, zero text overlap) -->
         <section id="reveal-stage" class="reveal-stage aria-hidden" aria-hidden="true">
-            <!-- Overgrown Vine Ring framing the Download Button -->
-            <svg class="download-vine-frame" viewBox="0 0 600 220" preserveAspectRatio="none">
-                <path class="download-vine-path" d="M 10,110 C 20,20 120,10 300,10 C 480,10 580,20 590,110 C 580,200 480,210 300,210 C 120,210 20,200 10,110 Z" />
-                <path class="download-vine-sub" d="M 30,110 C 40,35 140,25 300,25 C 460,25 560,35 570,110 C 560,185 460,195 300,195 C 140,195 40,185 30,110 Z" />
-            </svg>
             <a id="download-link" href="https://joshuaframptonunofficial.github.io/wotw-mods/" class="download-btn" target="_blank" rel="noopener noreferrer">
                 <span class="btn-glow"></span>
                 <span class="btn-text">DOWNLOAD UPDATE 2.0</span>
